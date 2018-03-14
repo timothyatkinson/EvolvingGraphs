@@ -12,3 +12,4 @@ default:	$(OBJECTS)
 
 clean:
 		rm cgp
+		$(foreach var,$(GP2_OBJECTS),-rm -r $(var))
