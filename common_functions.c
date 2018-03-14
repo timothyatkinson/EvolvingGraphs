@@ -1,26 +1,35 @@
 #include "common_functions.h"
 
-void add_function(FunctionSet* functionSet, string name, int arity, double (*func)(double* inputs)){
+void print_fset(Function_Set* fsetV){
+  printf("Function set with %d members:\n", fsetV->functionCount);
+  Function* f = fsetV->first;
+  while(f != NULL){
+    printf("%s (%d)\n", f->name, f->arity);
+    f = f->next;
+  }
+}
+
+void add_function(Function_Set* Function_Set, string name, int arity, double (*func)(double* inputs)){
     Function* f = malloc(sizeof(Function));
     f->name = strdup(name);
     f->arity = arity;
     f->func = func;
     f->next = NULL;
-    if(functionSet->functionCount > 0){
-      functionSet->last->next = f;
-      functionSet->last = f;
+    if(Function_Set->functionCount > 0){
+      Function_Set->last->next = f;
+      Function_Set->last = f;
     }
     else{
-      functionSet->first = f;
-      functionSet->last = f;
+      Function_Set->first = f;
+      Function_Set->last = f;
     }
-    functionSet->functionCount = functionSet->functionCount + 1;
+    Function_Set->functionCount = Function_Set->functionCount + 1;
 }
 
-FunctionSet* get_common_fset(string fsetV){
-    FunctionSet* functionSet = malloc(sizeof(FunctionSet));
-    functionSet->functionCount = 0;
-    functionSet->first = NULL;
+Function_Set* get_common_fset(string fsetV){
+    Function_Set* Function_Set = malloc(sizeof(Function_Set));
+    Function_Set->functionCount = 0;
+    Function_Set->first = NULL;
     int f = 0;
     int i = 0;
     int o = 0;
@@ -32,47 +41,47 @@ FunctionSet* get_common_fset(string fsetV){
           for(int j = i; j <= o; j++){
             name[j - i] = fsetV[j];
           }
+          name[o + 1 - i] = '\0';
         }
         else{
           name = malloc((1 + o - i) * sizeof(char));
           for(int j = i; j < o; j++){
             name[j - i] = fsetV[j];
           }
+          name[o - i] = '\0';
         }
-        name[o - i] = '\0';
-        printf("Function set: %s\n", name);
         if(strcmp(name, "and") == 0){
-          add_function(functionSet, "AND", 2, common_and);
+          add_function(Function_Set, "AND", 2, common_and);
         }
         else if(strcmp(name, "or") == 0){
-          add_function(functionSet, "OR", 2, common_or);
+          add_function(Function_Set, "OR", 2, common_or);
         }
         else if(strcmp(name, "nand") == 0){
-          add_function(functionSet, "NAND", 2, common_nand);
+          add_function(Function_Set, "NAND", 2, common_nand);
         }
         else if(strcmp(name, "nor") == 0){
-          add_function(functionSet, "NOR", 2, common_nor);
+          add_function(Function_Set, "NOR", 2, common_nor);
         }
         else if(strcmp(name, "xor") == 0){
-          add_function(functionSet, "XOR", 2, common_xor);
+          add_function(Function_Set, "XOR", 2, common_xor);
         }
         else if(strcmp(name, "not") == 0){
-          add_function(functionSet, "NOT", 1, common_not);
+          add_function(Function_Set, "NOT", 1, common_not);
         }
         else if(strcmp(name, "id") == 0){
-          add_function(functionSet, "ID", 1, common_id);
+          add_function(Function_Set, "ID", 1, common_id);
         }
         else if(strcmp(name, "add") == 0){
-          add_function(functionSet, "ADD", 2, common_add);
+          add_function(Function_Set, "ADD", 2, common_add);
         }
         else if(strcmp(name, "sub") == 0){
-          add_function(functionSet, "SUB", 2, common_sub);
+          add_function(Function_Set, "SUB", 2, common_sub);
         }
         else if(strcmp(name, "div") == 0){
-          add_function(functionSet, "DIV", 2, common_div);
+          add_function(Function_Set, "DIV", 2, common_div);
         }
         else if(strcmp(name, "mul") == 0){
-          add_function(functionSet, "MUL", 2, common_mul);
+          add_function(Function_Set, "MUL", 2, common_mul);
         }
         else{
           printf("Unknown function %s\n", name);
@@ -82,12 +91,12 @@ FunctionSet* get_common_fset(string fsetV){
       }
       o++;
     }
-    return functionSet;
+    return Function_Set;
 }
 
-Function* get_function(FunctionSet* functionSet, string name){
-    Function* f = functionSet->first;
-    for(int i = 0; i < functionSet->functionCount; i++){
+Function* get_function(Function_Set* Function_Set, string name){
+    Function* f = Function_Set->first;
+    for(int i = 0; i < Function_Set->functionCount; i++){
         if(strcmp(f->name, name) == 0){
           return f;
         }

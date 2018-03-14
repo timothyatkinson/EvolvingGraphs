@@ -53,11 +53,12 @@ Result* run_EA(EAArgs* args){
       }
     }
   }
-  res->winning_graph = population[winner];
-  res->winnerScore = bestScore;
+  res->winning_graph = &population[winner];
+  res->winning_score = bestScore;
   res->generation = generation;
-  res->terminated = generation == args->generation;
+  res->terminated = generation == args->generations;
   if(args->update > 0){
-    printf("Generation %d TERMINATED with score %lf\n", generation, res->winnerScore);
+    printf("Generation %d TERMINATED with score %lf\n", generation, res->winning_score);
   }
+  return res;
 }

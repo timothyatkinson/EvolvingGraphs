@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 //P-GP2 Libraries
 #include "common.h"
@@ -14,14 +15,14 @@
 #include "morphism.h"
 
 typedef struct EAArgs {
-  Graph* initialisation(int init_env_pointer);
-  int init_env_pointer;
-  double* evaluate(Graph* population, int evaluation_env_pointer);
-  int evaluation_env_pointer;
-  Graph* select_repopulate(Graph* population, double* scores, int select_repopulate_env_pointer);
-  int select_repopulate_env_pointer;
-  bool termination(Graph* population, double* scores, int termination_env_pointer);
-  int termination_env_pointer;
+  Graph* (*initialisation)(uintptr_t init_env_pointer);
+  uintptr_t init_env_pointer;
+  double* (*evaluate)(Graph* population, uintptr_t evaluation_env_pointer);
+  uintptr_t evaluation_env_pointer;
+  Graph* (*select_repopulate)(Graph* population, double* scores, uintptr_t select_repopulate_env_pointer);
+  uintptr_t select_repopulate_env_pointer;
+  bool (*termination)(Graph* population, double* scores, uintptr_t termination_env_pointer);
+  uintptr_t termination_env_pointer;
   bool maximise;
   int update;
   int generations;

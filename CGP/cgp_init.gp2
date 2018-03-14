@@ -1,0 +1,16 @@
+Main = add_node
+
+add_node
+(
+)
+[
+  (n0, empty)
+  |
+]
+=>
+[
+  (n0, empty)
+  (n1, empty)
+  |
+]
+interface = {n0}
