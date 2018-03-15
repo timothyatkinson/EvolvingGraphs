@@ -1,0 +1,28 @@
+Main = try [mutate_edge]
+
+mutate_edge
+(
+  a, b, c, d : list;
+  n, m : int;
+  s, t : string
+)
+[1.0]
+[
+  (n0, a : n : s)
+  (n1, c)
+  (n2, b : m : t)
+  |
+  (e0, n0, n1, d#blue)
+]
+=>
+[
+  (n0, a : n : s)
+  (n1, c)
+  (n2, b : m : t)
+  |
+  (e0, n0, n2, d)
+]
+interface = {
+  n0, n1, n2
+}
+where t != "OUT" and m < n

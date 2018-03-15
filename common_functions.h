@@ -25,14 +25,15 @@ typedef struct Function {
 
 typedef struct Function_Set {
     int functionCount;
-    Function* first;
-    Function* last;
+    struct Function* first;
+    struct Function* last;
 } Function_Set;
 
 void print_fset(Function_Set* fsetV);
 Function_Set* get_common_fset(string fsetV);
-void add_function(Function_Set* Function_Set, string name, int arity, double (*func)(double* inputs));
-Function* get_function(Function_Set* Function_Set, string name);
+void add_function(Function_Set* fset, string name, int arity, double (*func)(double* inputs));
+Function* get_function(Function_Set* fset, string name);
+void freeFset(Function_Set* fset);
 double common_and(double* inputs);
 double common_or(double* inputs);
 double common_nand(double* inputs);

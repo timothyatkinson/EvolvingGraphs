@@ -8,6 +8,7 @@
 #include "../utils.h"
 
 #include "graph.h"
+#include "common.h"
 
 typedef struct CGP_init_env{
   Function_Set* fset;

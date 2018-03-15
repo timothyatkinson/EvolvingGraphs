@@ -1,6 +1,7 @@
 #include "cgp.h"
 #include "cgp_init/cgp_init.h"
-#include "cgp_mutate_node/cgp_mutate_node.h"
+#include "cgp_node_mutate/cgp_node_mutate.h"
+#include "cgp_edge_mutate/cgp_edge_mutate.h"
 
 //Util functions to prepare and clean a graph in the mutation procedure cgp_mutate
 static void prepare_graph_mutate(Graph* host, Function_Set* fset, int max_arity);
@@ -54,21 +55,26 @@ Graph* cgp_mutate(Graph* host, Function_Set* fset, int max_arity, double mutatio
   prepare_graph_mutate(new_graph, fset, max_arity);
 
   //Go through nodes in ordering, mutating functions and edges
-  for(int i = 0; i < host->nodes.size; i++){
-     Node *host_node = getNode(host, i);
+  for(int i = 0; i < new_graph->nodes.size; i++){
+     Node *host_node = getNode(new_graph, i);
 
 
-    //Checks if the node exists, is not rooted (e.g. not a function node), has the correct format and is not an input node (which cannot be mutated)
+    //Checks if the node exists, is not rooted (e.g. not a function set node), has the correct format and is not an input node (which cannot be mutated)
     if(host_node == NULL) continue;
     if(host_node->root) continue;
-
+    HostLabel label = host_node->label;
     HostListItem *item = label.list->last;
     if(item->atom.type != 's') break;
 
-    if(strcmp(item, "IN") == 0) continue;
+    if(strcmp(item->atom.str, "IN") == 0) continue;
 
-    if (strcmp(item, "OUT") != 0){
+    if (strcmp(item->atom.str, "OUT") != 0){
         //Function mutation is possible
+        double r = ((double)rand() / (double)RAND_MAX);
+        if(r <= mutation_rate){
+          changeNodeMark(new_graph, i, 3);
+          cgp_node_mutate_execute(new_graph);
+        }
 
     }
 
@@ -76,13 +82,22 @@ Graph* cgp_mutate(Graph* host, Function_Set* fset, int max_arity, double mutatio
     int counter;
     for(counter = 0; counter < host_node->out_edges.size + 2; counter++)
     {
-       Edge *host_edge = getNthOutEdge(MutateFeedForwardEdge_host, host_node, counter);
+       Edge *host_edge = getNthOutEdge(new_graph, host_node, counter);
 
        //Check edge exists and is not a loop
        if(host_edge == NULL) continue;
        if(host_edge->source == host_edge->target) continue;
 
-       
+       //Edge mutation is possible
+       double r = ((double)rand() / (double)RAND_MAX);
+       if(r <= mutation_rate){
+         changeEdgeMark(new_graph, host_edge->index, 3);
+         cgp_edge_mutate_execute(new_graph);
+         if(host_edge->label.mark == 3){
+             changeEdgeMark(new_graph, host_edge->index, 0);
+         }
+       }
+
      }
   }
 

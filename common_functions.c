@@ -9,27 +9,26 @@ void print_fset(Function_Set* fsetV){
   }
 }
 
-void add_function(Function_Set* Function_Set, string name, int arity, double (*func)(double* inputs)){
+void add_function(Function_Set* fset, string name, int arity, double (*func)(double* inputs)){
     Function* f = malloc(sizeof(Function));
     f->name = strdup(name);
     f->arity = arity;
     f->func = func;
     f->next = NULL;
-    if(Function_Set->functionCount > 0){
-      Function_Set->last->next = f;
-      Function_Set->last = f;
+    if(fset->functionCount > 0){
+      fset->last->next = f;
+      fset->last = f;
     }
     else{
-      Function_Set->first = f;
-      Function_Set->last = f;
+      fset->first = f;
+      fset->last = f;
     }
-    Function_Set->functionCount = Function_Set->functionCount + 1;
+    fset->functionCount = fset->functionCount + 1;
 }
 
 Function_Set* get_common_fset(string fsetV){
-    Function_Set* Function_Set = malloc(sizeof(Function_Set));
-    Function_Set->functionCount = 0;
-    Function_Set->first = NULL;
+    Function_Set* fset = malloc(sizeof(Function_Set));
+    fset->functionCount = 0;
     int f = 0;
     int i = 0;
     int o = 0;
@@ -51,37 +50,37 @@ Function_Set* get_common_fset(string fsetV){
           name[o - i] = '\0';
         }
         if(strcmp(name, "and") == 0){
-          add_function(Function_Set, "AND", 2, common_and);
+          add_function(fset, "AND", 2, common_and);
         }
         else if(strcmp(name, "or") == 0){
-          add_function(Function_Set, "OR", 2, common_or);
+          add_function(fset, "OR", 2, common_or);
         }
         else if(strcmp(name, "nand") == 0){
-          add_function(Function_Set, "NAND", 2, common_nand);
+          add_function(fset, "NAND", 2, common_nand);
         }
         else if(strcmp(name, "nor") == 0){
-          add_function(Function_Set, "NOR", 2, common_nor);
+          add_function(fset, "NOR", 2, common_nor);
         }
         else if(strcmp(name, "xor") == 0){
-          add_function(Function_Set, "XOR", 2, common_xor);
+          add_function(fset, "XOR", 2, common_xor);
         }
         else if(strcmp(name, "not") == 0){
-          add_function(Function_Set, "NOT", 1, common_not);
+          add_function(fset, "NOT", 1, common_not);
         }
         else if(strcmp(name, "id") == 0){
-          add_function(Function_Set, "ID", 1, common_id);
+          add_function(fset, "ID", 1, common_id);
         }
         else if(strcmp(name, "add") == 0){
-          add_function(Function_Set, "ADD", 2, common_add);
+          add_function(fset, "ADD", 2, common_add);
         }
         else if(strcmp(name, "sub") == 0){
-          add_function(Function_Set, "SUB", 2, common_sub);
+          add_function(fset, "SUB", 2, common_sub);
         }
         else if(strcmp(name, "div") == 0){
-          add_function(Function_Set, "DIV", 2, common_div);
+          add_function(fset, "DIV", 2, common_div);
         }
         else if(strcmp(name, "mul") == 0){
-          add_function(Function_Set, "MUL", 2, common_mul);
+          add_function(fset, "MUL", 2, common_mul);
         }
         else{
           printf("Unknown function %s\n", name);
@@ -91,12 +90,12 @@ Function_Set* get_common_fset(string fsetV){
       }
       o++;
     }
-    return Function_Set;
+    return fset;
 }
 
-Function* get_function(Function_Set* Function_Set, string name){
-    Function* f = Function_Set->first;
-    for(int i = 0; i < Function_Set->functionCount; i++){
+Function* get_function(Function_Set* fset, string name){
+    Function* f = fset->first;
+    for(int i = 0; i < fset->functionCount; i++){
         if(strcmp(f->name, name) == 0){
           return f;
         }
@@ -163,4 +162,18 @@ double common_div(double* inputs){
 
 double common_mul(double* inputs){
     return inputs[0] * inputs[1];
+}
+
+void freeFset(Function_Set* fset){
+    Function* f = fset->first;
+    while(f != NULL){
+      Function* f2 = f->next;
+      free(f->name);
+      f->next = NULL;
+      free(f);
+      f = f2;
+    }
+    fset->first = NULL;
+    fset->last = NULL;
+    free(fset);
 }

@@ -13,5 +13,19 @@ int main(void){
   init_env->pop_size = 5;
   Graph* population = cgp_init((uintptr_t)init_env);
 
+  printf("\nOld host \n\n");
 
+  printfGraph(&population[0]);
+
+  Graph* new_individual = cgp_mutate(&population[0], init_env->fset, 2, 0.2);
+
+  printf("\nMutated Graph\n\n");
+
+  printfGraph(new_individual);
+
+  freeGraph(new_individual);
+  freeGraphArray(population, 5);
+  freeFset(init_env->fset);
+  //freeDataset(init_env->dataset);
+  free(init_env);
 }

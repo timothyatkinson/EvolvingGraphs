@@ -96,3 +96,41 @@ Graph* build_empty_host_graph()
    Graph* new_host = newGraph(100000, 100000);
    return new_host;
 }
+
+void freeGraphArray(Graph* array, int graphs){
+    for(int i = 0; i < graphs; i++){
+     Graph* graph = &array[i];
+     if(graph == NULL) return;
+     int index;
+     for(index = 0; index < graph->nodes.size; index++)
+     {
+        Node *node = getNode(graph, index);
+        if(node == NULL) continue;
+        if(node->out_edges.items != NULL) free(node->out_edges.items);
+        if(node->in_edges.items != NULL) free(node->in_edges.items);
+        removeHostList(node->label.list);
+     }
+     if(graph->nodes.holes.items) free(graph->nodes.holes.items);
+     if(graph->nodes.items) free(graph->nodes.items);
+
+     for(index = 0; index < graph->edges.size; index++)
+     {
+        Edge *edge = getEdge(graph, index);
+        if(edge == NULL) continue;
+        removeHostList(edge->label.list);
+     }
+     if(graph->edges.holes.items) free(graph->edges.holes.items);
+     if(graph->edges.items) free(graph->edges.items);
+     if(graph->root_nodes != NULL)
+     {
+        RootNodes *iterator = graph->root_nodes;
+        while(iterator != NULL)
+        {
+           RootNodes *temp = iterator;
+           iterator = iterator->next;
+           free(temp);
+        }
+     }
+   }
+   free(array);
+}
