@@ -24,5 +24,5 @@ void unmark_graph(Graph* hostG);
 int count_active_nodes(Graph* hostG, int inputs, int outputs);
 //Duplicates a graph
 Graph* duplicate_graph(Graph *graph);
-
+Graph* build_empty_host_graph();
 #endif

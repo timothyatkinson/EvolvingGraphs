@@ -1,16 +1,136 @@
-Main = add_node
+Main = init_node_counter; AddNode!; [connect_output]!
+AddNode = check_node_counter; [add_node]; [add_edge_to_arity]!; unmark_node
 
-add_node
+//Creates a counter for how many nodes have been added. This node will eventually be removed by the external cleanup procedure.
+init_node_counter
 (
+  n : int
 )
 [
-  (n0, empty)
+  (n0(R), "Nodes":n)
   |
 ]
 =>
 [
-  (n0, empty)
-  (n1, empty)
+  (n0(R), "Nodes":n)
+  (n1(R), "NodesAdded":0)
   |
 ]
-interface = {n0}
+interface = {
+  n0
+}
+
+//Checks if all nodes have been added
+check_node_counter
+(
+  n, m : int
+)
+[
+  (n0(R), "Nodes":n)
+  (n1(R), "NodesAdded":m)
+  |
+]
+=>
+[
+  (n0(R), "Nodes":n)
+  (n1(R), "NodesAdded":m)
+  |
+]
+interface = {
+  n0, n1
+}
+where n > m
+
+//Adds a new node (rooted), incrementing the node counter and marking that node blue
+add_node
+(
+  n, a, i : int;
+  f : string
+)
+[1.0]
+[
+  (n0(R), "NodesAdded":n)
+  (n1(R), "FunctionSet":f:a)
+  (n3(R), "Inputs":i)
+  |
+]
+=>
+[
+  (n0(R), "NodesAdded":n + 1)
+  (n1(R), "FunctionSet":f:a)
+  (n2(R), n + i : f #blue)
+  (n3(R), "Inputs":i)
+  |
+]
+interface = {
+  n0, n1, n3
+}
+
+//Adds edges until arity met
+add_edge_to_arity
+(
+  n, m, a : int;
+  x, y : list;
+  s, t, f : string
+)
+[1.0]
+[
+  (n0(R), x:n:s#blue)
+  (n1, y:m:t)
+  (n2(R), "FunctionSet":f:a)
+  |
+]
+=>
+[
+  (n0(R), x:n:s#blue)
+  (n1, y:m:t)
+  (n2(R), "FunctionSet":f:a)
+  |
+  (e0, n0, n1, outdeg(n0))
+]
+interface = {
+  n0, n1, n2
+}
+where outdeg(n0) < a and m < n and s = f
+
+
+//Unmarks and unroots the added node
+unmark_node
+(
+  a : list
+)
+[
+  (n0(R), a#blue)
+  |
+]
+=>
+[
+  (n0, a)
+  |
+]
+interface = {
+  n0
+}
+
+connect_output
+(
+  a, b : list;
+  s : string
+)
+[1.0]
+[
+  (n0, a : "OUT")
+  (n1, b : s)
+  |
+]
+=>
+[
+  (n0, a : "OUT")
+  (n1, b : s)
+  |
+  (e0, n0, n1, 0)
+]
+interface = {
+  n0, n1
+}
+where s != "OUT" and outdeg(n0) = 0

@@ -44,7 +44,7 @@ GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_m
   return dataset;
 }
 
-//Evaluates a Genetic Programming individual.
+//Evaluates a Genetic Programming individual. Used in CGP, EGGP, PDGP and TinyGP implementations
 double gp_evaluate(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
   getNode(host_graph, 0);
 	mark_active_blue(host_graph);
@@ -72,10 +72,9 @@ double gp_evaluate(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
      if(host_node == NULL || host_node->index == -1) continue;
 
      HostLabel label = host_node->label;
-     if(label.length != 2) break;
 
      HostListItem *item = label.list->first;
-     HostListItem *item2 = item->next;
+     HostListItem *item2 = label.list->last;
      if(item->atom.type != 'i') break;
      if(item2->atom.type != 's') break;
      if(strcmp(item2->atom.str, "IN") == 0){

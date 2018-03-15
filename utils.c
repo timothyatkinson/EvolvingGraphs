@@ -90,3 +90,9 @@ void unmark_graph(Graph* hostG){
 			}
 		}
 }
+
+Graph* build_empty_host_graph()
+{
+   Graph* new_host = newGraph(100000, 100000);
+   return new_host;
+}
