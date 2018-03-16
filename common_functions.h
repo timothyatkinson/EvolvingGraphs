@@ -29,6 +29,7 @@ typedef struct Function_Set {
     struct Function* last;
 } Function_Set;
 
+int get_max_arity(Function_Set* fset);
 void print_fset(Function_Set* fsetV);
 Function_Set* get_common_fset(string fsetV);
 void add_function(Function_Set* fset, string name, int arity, double (*func)(double* inputs));

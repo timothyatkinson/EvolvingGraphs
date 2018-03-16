@@ -46,8 +46,9 @@ Graph* cgp_init(uintptr_t env_pointer){
 }
 
 //Mutates a CGP individual (copies the individual, rather than overwriting).
-Graph* cgp_mutate(Graph* host, Function_Set* fset, int max_arity, double mutation_rate){
+Graph* cgp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
 
+  int max_arity = get_max_arity(fset);
   //Copy the individual to mutate
   Graph* new_graph = duplicate_graph(host);
 
@@ -222,9 +223,10 @@ static void prepare_graph_mutate(Graph* host, Function_Set* fset, int max_arity)
 static void clean_graph_mutate(Graph* host){
   /* REMOVE FUNCTION SET AND NODES COUNTER. These are the only rooted nodes. */
   for(int i = 0; i < host->nodes.size; i++){
-     Node *host_node = getNode(host, i);
+   Node *host_node = getNode(host, i);
    if(host_node == NULL) continue;
    if(!host_node->root) continue;
+   printf("Remove node %d\n", i);
    removeNode(host, i);
   }
 }

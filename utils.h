@@ -26,5 +26,6 @@ int count_active_nodes(Graph* hostG, int inputs, int outputs);
 Graph* duplicate_graph(Graph *graph);
 Graph* build_empty_host_graph();
 
-void freeGraphArray(Graph* array, int graphs);
+void free_graph_array(Graph* array, int graphs);
+void free_graph_data(Graph* graph);
 #endif

@@ -20,6 +20,6 @@ typedef struct CGP_init_env{
 
 
 Graph* cgp_init(uintptr_t env_pointer);
-Graph* cgp_mutate(Graph* host, Function_Set* fset, int max_arity, double mutation_rate);
+Graph* cgp_mutate(Graph* host, Function_Set* fset, double mutation_rate);
 
 #endif

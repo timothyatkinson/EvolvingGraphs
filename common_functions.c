@@ -9,6 +9,18 @@ void print_fset(Function_Set* fsetV){
   }
 }
 
+int get_max_arity(Function_Set* fset){
+  Function* f = fset->first;
+  int max_arity = 0;
+  while(f != NULL){
+    if(f->arity > max_arity){
+      max_arity = f->arity;
+    }
+    f = f->next;
+  }
+  return max_arity;
+}
+
 void add_function(Function_Set* fset, string name, int arity, double (*func)(double* inputs)){
     Function* f = malloc(sizeof(Function));
     f->name = strdup(name);
@@ -87,6 +99,7 @@ Function_Set* get_common_fset(string fsetV){
         }
         i = o + 1;
         f++;
+        free(name);
       }
       o++;
     }

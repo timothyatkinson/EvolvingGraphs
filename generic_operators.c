@@ -1,5 +1,9 @@
 #include "generic_operators.h"
 
+//Function for comparing two scores
+static bool compare(double candidate, double champion, bool maximise, bool neutral_drift);
+
+
 //Loads a dataset for Genetic Programming.
 GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_min, double rand_max, int outputs, int rows){
   GP_Dataset* dataset = malloc(sizeof(GP_Dataset));
@@ -187,4 +191,65 @@ double gp_evaluate(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
   }
 	unmark_graph(host_graph);
   return totalError;
+}
+
+void freeDataset(GP_Dataset* dataset){
+  for(int i = 0; i < dataset->rows; i++){
+    free(dataset->data[i]);
+  }
+  free(dataset->data);
+  free(dataset);
+}
+
+//A procedure for performing 1 + lambda selection and reproduction
+Graph* GP_1_plus_lambda(Graph* population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer){
+  //Access 1 + lambda environment using pointer
+  GP_1_plus_lambda_env* env = (GP_1_plus_lambda_env*)GP_1_plus_lambda_env_pointer;
+  Function_Set* fset = env->fset;
+  double mutation_rate = env->mutation_rate;
+  int winner_index = env->winner_index;
+  int winner_score = env->winner_score;
+  int pop_size = env->pop_size;
+  bool maximise = env->maximise;
+  bool neutral_drift = env->neutral_drift;
+
+  //Find generation's "winning" parent
+  int parent = winner_index;
+  double best_score = winner_score;
+  for(int i = 0; i < pop_size; i++){
+    if(i != winner_index && compare(scores[i], best_score, maximise, neutral_drift)){
+      parent = i;
+      best_score = scores[i];
+    }
+  }
+
+  //We now know the next generation's parent
+  env->winner_index = parent;
+  env->winner_score = best_score;
+  Graph* new_pop = malloc(pop_size * sizeof(Graph));
+  for(int i = 0; i < pop_size; i++){
+    if(i != parent){
+      new_pop[i] = *env->mutate(&population[parent], fset, mutation_rate);
+    }
+    else{
+      new_pop[i] = *duplicate_graph(&population[parent]);
+    }
+  }
+  free_graph_array(population, pop_size);
+  return new_pop;
+}
+
+static bool compare(double candidate, double champion, bool maximise, bool neutral_drift){
+  if(maximise){
+    if(candidate > champion || (candidate == champion && neutral_drift)){
+      return true;
+    }
+    return false;
+  }
+  else{
+    if(candidate < champion || (candidate == champion && neutral_drift)){
+      return true;
+    }
+    return false;
+  }
 }

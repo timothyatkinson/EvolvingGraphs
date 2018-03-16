@@ -17,15 +17,41 @@ int main(void){
 
   printfGraph(&population[0]);
 
-  Graph* new_individual = cgp_mutate(&population[0], init_env->fset, 2, 0.2);
+  Graph* new_individual = cgp_mutate(&population[0], init_env->fset, 0.2);
 
   printf("\nMutated Graph\n\n");
 
   printfGraph(new_individual);
 
   freeGraph(new_individual);
-  freeGraphArray(population, 5);
+
+  double* scores = malloc(5 * sizeof(double));
+  scores[0] = 0.0;
+  scores[1] = 1.0;
+  scores[2] = 0.0;
+  scores[3] = 0.0;
+  scores[4] = 0.0;
+
+  printfGraph(&population[1]);
+
+  GP_1_plus_lambda_env* select_env = malloc(sizeof(GP_1_plus_lambda_env));
+  select_env->pop_size = 5;
+  select_env->fset = init_env->fset;
+  select_env->mutation_rate = 0.2;
+  select_env->winner_index = -1;
+  select_env->winner_score = -1.0;
+  select_env->maximise = true;
+  select_env->neutral_drift = true;
+  select_env->mutate = cgp_mutate;
+
+  population = GP_1_plus_lambda(population, scores, (uintptr_t)select_env);
+    population = GP_1_plus_lambda(population, scores, (uintptr_t)select_env);
+      population = GP_1_plus_lambda(population, scores, (uintptr_t)select_env);
+
+  printf("\nFinal graph 2:\n\n");
+  printfGraph(&population[2]);
+  free_graph_array(population, 5);
   freeFset(init_env->fset);
-  //freeDataset(init_env->dataset);
+  freeDataset(init_env->dataset);
   free(init_env);
 }
