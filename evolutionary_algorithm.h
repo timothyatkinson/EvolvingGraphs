@@ -26,7 +26,7 @@ typedef struct EAArgs {
   uintptr_t select_repopulate_env_pointer;
   bool (*termination)(Graph** population, double* scores, uintptr_t termination_env_pointer);
   uintptr_t termination_env_pointer;
-  int (*popsize)(Graph** population, uintptr_t pop_size_env_pointer);
+  int (*pop_size)(Graph** population, uintptr_t pop_size_env_pointer);
   uintptr_t pop_size_env_pointer;
   bool maximise;
   int update;
@@ -40,6 +40,7 @@ typedef struct Result {
   bool terminated;
 } Result;
 
+Result** run_multi(EAArgs** args, int runs);
 Result* run_EA(EAArgs* args);
 
 #endif

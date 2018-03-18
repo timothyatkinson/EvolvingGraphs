@@ -50,7 +50,7 @@ typedef struct Target_0_env{
 
 typedef struct Fixed_pop_env{
   int pop_size;
-}
+} Fixed_pop_env;
 
 //Loads a dataset
 GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_min, double rand_max, int outputs, int rows);
@@ -66,4 +66,6 @@ double gp_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
 double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer);
 //returns 0 when a population contains an individual scoring exactly 0
 bool target_0(Graph** population, double* scores, uintptr_t target_0_env);
+
+int fixed_pop_size(Graph** population, uintptr_t pop_size_env);
 #endif

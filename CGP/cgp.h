@@ -23,6 +23,7 @@ GP_1_plus_lambda_env* default_cgp_select_env(Function_Set* fset);
 GP_eval_env* default_cgp_eval_env(GP_Dataset* dataset, Function_Set* fset);
 Target_0_env* default_cgp_termination_env();
 EAArgs* default_cgp_EAArgs(GP_Dataset* dataset, Function_Set* fset);
+Fixed_pop_env* default_cgp_pop_size_env();
 
 Graph** cgp_init(uintptr_t env_pointer);
 Graph* cgp_mutate(Graph* host, Function_Set* fset, double mutation_rate);

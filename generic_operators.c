@@ -270,9 +270,14 @@ bool target_0(Graph** population, double* scores, uintptr_t target_0_env_pointer
   Target_0_env* target_env = (Target_0_env*)target_0_env_pointer;
   int pop_size = target_env->pop_size;
   for(int i = 0; i < pop_size; i++){
-    if(scores[i] == 0.0){
+    if(scores[i] <= 0.0){
       return true;
     }
   }
   return false;
+}
+
+int fixed_pop_size(Graph** population, uintptr_t pop_size_env){
+  Fixed_pop_env* env = (Fixed_pop_env*)pop_size_env;
+  return env->pop_size;
 }

@@ -49,7 +49,7 @@ static void evaluatePredicatecgp_edge_mutate_1(Morphism *morphism)
    if(assignment_5.type == 'n') return;
    int var_5 = getIntegerValue(morphism, 5);
 
-   if(var_5 < var_4) cgp_edge_mutate_b1 = true;
+   if(var_5 <= var_4) cgp_edge_mutate_b1 = true;
    else cgp_edge_mutate_b1 = false;
 }
 

@@ -34,42 +34,24 @@ int cgp_edge_mutate_execute(Graph* host_graph)
    emptyPot(cgp_edge_mutate_pot);
    M_cgp_edge_mutate_mutate_edge = makeMorphism(3, 1, 8);
 
-   /* Try Statement */
-   /* Condition */
-   do
-   {
-      /* Rule Call */
-      emptyPot(cgp_edge_mutate_pot);
-      fillpotcgp_edge_mutate_mutate_edge(cgp_edge_mutate_pot, M_cgp_edge_mutate_mutate_edge);
-      if(potSize(cgp_edge_mutate_pot) > 0){
-         MorphismHolder *holder = drawFromPot(cgp_edge_mutate_pot);
-         duplicateMorphism(holder->morphism, M_cgp_edge_mutate_mutate_edge, cgp_edge_mutate_host);
-         freeMorphism(holder->morphism);
-         free(holder);
-         applycgp_edge_mutate_mutate_edge(M_cgp_edge_mutate_mutate_edge, false);
-         cgp_edge_mutate_success = true;
-      }
-      else
-      {
-         cgp_edge_mutate_success = false;
-         break;
-      }
-      emptyPot(cgp_edge_mutate_pot);
-   } while(false);
-
-   /* Then Branch */
-   if(cgp_edge_mutate_success)
-   {
-      /* Skip Statement */
+   /* Rule Call */
+   emptyPot(cgp_edge_mutate_pot);
+   fillpotcgp_edge_mutate_mutate_edge(cgp_edge_mutate_pot, M_cgp_edge_mutate_mutate_edge);
+   if(potSize(cgp_edge_mutate_pot) > 0){
+      MorphismHolder *holder = drawFromPot(cgp_edge_mutate_pot);
+      duplicateMorphism(holder->morphism, M_cgp_edge_mutate_mutate_edge, cgp_edge_mutate_host);
+      freeMorphism(holder->morphism);
+      free(holder);
+      applycgp_edge_mutate_mutate_edge(M_cgp_edge_mutate_mutate_edge, false);
       cgp_edge_mutate_success = true;
    }
-   /* Else Branch */
    else
    {
-      cgp_edge_mutate_success = true;
-      /* Skip Statement */
-      cgp_edge_mutate_success = true;
+      printf("No output graph: rule cgp_edge_mutate_mutate_edge not applicable.\n");
+      cgp_edge_mutate_garbageCollect();
+      return 0;
    }
+   emptyPot(cgp_edge_mutate_pot);
    cgp_edge_mutate_garbageCollect();
    return 0;
 }

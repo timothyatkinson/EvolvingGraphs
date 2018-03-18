@@ -51,11 +51,18 @@ Target_0_env* default_cgp_termination_env(){
   return env;
 }
 
+Fixed_pop_env* default_cgp_pop_size_env(){
+  Fixed_pop_env* env = malloc(sizeof(Fixed_pop_env));
+  env->pop_size = 5;
+  return env;
+}
+
 EAArgs* default_cgp_EAArgs(GP_Dataset* dataset, Function_Set* fset){
   uintptr_t init_pointer = (uintptr_t)default_cgp_init_env(dataset, fset);
   uintptr_t select_pointer = (uintptr_t)default_cgp_select_env(fset);
   uintptr_t eval_pointer = (uintptr_t)default_cgp_eval_env(dataset, fset);
   uintptr_t term_pointer = (uintptr_t)default_cgp_termination_env();
+  uintptr_t pop_pointer = (uintptr_t)default_cgp_pop_size_env();
   EAArgs* args = malloc(sizeof(EAArgs));
   args->initialisation = cgp_init;
   args->init_env_pointer = init_pointer;
@@ -65,9 +72,11 @@ EAArgs* default_cgp_EAArgs(GP_Dataset* dataset, Function_Set* fset){
   args->select_repopulate_env_pointer = select_pointer;
   args->termination = target_0;
   args->termination_env_pointer = term_pointer;
+  args->pop_size = fixed_pop_size;
+  args->pop_size_env_pointer = pop_pointer;
   args->maximise = false;
   args->generations = 20000000;
-  args->update = 100;
+  args->update = 1;
   return args;
 }
 
@@ -199,7 +208,7 @@ static void prepare_graph_init(Graph* host, Function_Set* fset, int inputs, int 
     array[0].type = 'i';
     array[0].num = i;
     array[1].type = 'i';
-    array[1].num = i + nodes + inputs - 1;
+    array[1].num = i + nodes + inputs;
     array[2].type = 's';
     array[2].str = "OUT";
     HostList *list = makeHostList(array, 3, false);

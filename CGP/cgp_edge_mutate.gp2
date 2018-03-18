@@ -1,4 +1,4 @@
-Main = try [mutate_edge]
+Main = [mutate_edge]
 
 mutate_edge
 (
@@ -25,4 +25,4 @@ mutate_edge
 interface = {
   n0, n1, n2
 }
-where t != "OUT" and m < n
+where t != "OUT" and m <= n
