@@ -38,15 +38,32 @@ typedef struct GP_1_plus_lambda_env{
     bool neutral_drift;
 } GP_1_plus_lambda_env;
 
+typedef struct GP_eval_env{
+    Function_Set* fset;
+    GP_Dataset* dataset;
+    int pop_size;
+} GP_eval_env;
+
+typedef struct Target_0_env{
+  int pop_size;
+} Target_0_env;
+
+typedef struct Fixed_pop_env{
+  int pop_size;
+}
+
 //Loads a dataset
 GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_min, double rand_max, int outputs, int rows);
 void freeDataset(GP_Dataset* dataset);
 
 //Performs a 1 plus Lambda select + select_repopulate
 
-Graph* GP_1_plus_lambda(Graph* population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer);
+Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer);
 
 //Evaluates a computational network against a dataset
 double gp_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
-
+//Evaluates a whole population using gp_evaluate
+double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer);
+//returns 0 when a population contains an individual scoring exactly 0
+bool target_0(Graph** population, double* scores, uintptr_t target_0_env);
 #endif

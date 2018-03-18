@@ -48,13 +48,9 @@ void mark_active_blue(Graph* hostG){
 		 if(host_node == NULL || host_node->index == -1) continue;
 
 		 HostLabel label = host_node->label;
-		 if(label.length != 2) break;
-
-		 HostListItem *item = label.list->first;
-		 HostListItem *item2 = item->next;
-		 if(item->atom.type != 'i') break;
-		 if(item2->atom.type != 's') break;
-		 if(strcmp(item2->atom.str, "OUT") == 0){
+		 HostListItem *item = label.list->last;
+		 if(item->atom.type != 's') break;
+		 if(strcmp(item->atom.str, "OUT") == 0){
 	   	 changeNodeMark(hostG, host_index, 3);
 			 mark_active_children_blue(hostG, host_node);
 		 }
@@ -97,10 +93,9 @@ Graph* build_empty_host_graph()
    return new_host;
 }
 
-void free_graph_array(Graph* array, int graphs){
+void free_graph_array(Graph** array, int graphs){
     for(int i = 0; i < graphs; i++){
-     Graph* graph = &array[i];
-     free_graph_data(graph);
+     freeGraph(array[i]);
    }
    free(array);
 }

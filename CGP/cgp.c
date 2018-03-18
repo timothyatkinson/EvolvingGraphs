@@ -11,8 +11,72 @@ static void clean_graph_mutate(Graph* host);
 static void prepare_graph_init(Graph* host, Function_Set* fset, int inputs, int outputs, int nodes, int max_arity);
 static void clean_graph_init(Graph* host);
 
+//A default environment for initialisation of a CGP individual
+CGP_init_env* default_cgp_init_env(GP_Dataset* dataset, Function_Set* fset){
+  CGP_init_env* env = malloc(sizeof(CGP_init_env));
+  env->fset = fset;
+  env->dataset = dataset;
+  env->nodes = 100;
+  env->max_arity = get_max_arity(fset);
+  env->pop_size = 5;
+  return env;
+}
+
+//A default environment for running 1 plus lambda for CGP
+GP_1_plus_lambda_env* default_cgp_select_env(Function_Set* fset){
+  GP_1_plus_lambda_env* env = malloc(sizeof(GP_1_plus_lambda_env));
+  env->mutate = cgp_mutate;
+  env->pop_size = 5;
+  env->mutation_rate = 0.04;
+  env->winner_index = -1;
+  env->winner_score = 99999999.9;
+  env->fset = fset;
+  env->neutral_drift = true;
+  env->maximise = false;
+  return env;
+}
+
+//A default environment for evaluating GP individuals using gp_evaluate_population
+GP_eval_env* default_cgp_eval_env(GP_Dataset* dataset, Function_Set* fset){
+  GP_eval_env* env = malloc(sizeof(GP_eval_env));
+  env->dataset = dataset;
+  env->fset = fset;
+  env->pop_size = 5;
+  return env;
+}
+
+Target_0_env* default_cgp_termination_env(){
+  Target_0_env* env = malloc(sizeof(Target_0_env));
+  env->pop_size = 5;
+  return env;
+}
+
+EAArgs* default_cgp_EAArgs(GP_Dataset* dataset, Function_Set* fset){
+  uintptr_t init_pointer = (uintptr_t)default_cgp_init_env(dataset, fset);
+  uintptr_t select_pointer = (uintptr_t)default_cgp_select_env(fset);
+  uintptr_t eval_pointer = (uintptr_t)default_cgp_eval_env(dataset, fset);
+  uintptr_t term_pointer = (uintptr_t)default_cgp_termination_env();
+  EAArgs* args = malloc(sizeof(EAArgs));
+  args->initialisation = cgp_init;
+  args->init_env_pointer = init_pointer;
+  args->evaluate = gp_evaluate_population;
+  args->evaluation_env_pointer = eval_pointer;
+  args->select_repopulate = GP_1_plus_lambda;
+  args->select_repopulate_env_pointer = select_pointer;
+  args->termination = target_0;
+  args->termination_env_pointer = term_pointer;
+  args->maximise = false;
+  args->generations = 20000000;
+  args->update = 100;
+  return args;
+}
+
+EAArgs* generate_cgp_EAArgs(GP_Dataset* dataset, Function_Set* fset, int nodes, int pop_size, double mutation_rate){
+  return NULL;
+}
+
 //Generates a population of CGP individuals.
-Graph* cgp_init(uintptr_t env_pointer){
+Graph** cgp_init(uintptr_t env_pointer){
   //Access initialisation environment using pointer
   CGP_init_env* env = (CGP_init_env*)env_pointer;
 
@@ -25,20 +89,20 @@ Graph* cgp_init(uintptr_t env_pointer){
   int max_arity = env->max_arity;
   int pop_size = env->pop_size;
 
-  Graph* population = malloc(pop_size * sizeof(Graph));
+  Graph** population = malloc(pop_size * sizeof(Graph*));
 
   for(int i = 0; i < pop_size; i++){
     //Prepare empty graph
-    population[i] = *build_empty_host_graph();
+    population[i] = build_empty_host_graph();
 
     //Load graph with variables
-    prepare_graph_init(&population[i], fset, inputs, outputs, nodes, max_arity);
+    prepare_graph_init(population[i], fset, inputs, outputs, nodes, max_arity);
 
     //Generate CGP individuals
-    cgp_init_execute(&population[i]);
+    cgp_init_execute(population[i]);
 
     //Cleanup graph (removing meta data from prepare_graph_init)
-    clean_graph_init(&population[i]);
+    clean_graph_init(population[i]);
   }
 
   //Return
@@ -152,7 +216,7 @@ static void prepare_graph_init(Graph* host, Function_Set* fset, int inputs, int 
      array[0].type = 's';
      array[0].str = "FunctionSet";
      array[1].type = 's';
-     array[1].str = strdup(f->name);
+     array[1].str = f->name;
      array[2].type = 'i';
      //Assume all functions have max arity.
      array[2].num = max_arity;
@@ -209,7 +273,7 @@ static void prepare_graph_mutate(Graph* host, Function_Set* fset, int max_arity)
      array[0].type = 's';
      array[0].str = "FunctionSet";
      array[1].type = 's';
-     array[1].str = strdup(f->name);
+     array[1].str = f->name;
      array[2].type = 'i';
      //Assume all functions have max arity.
      array[2].num = max_arity;
@@ -226,7 +290,6 @@ static void clean_graph_mutate(Graph* host){
    Node *host_node = getNode(host, i);
    if(host_node == NULL) continue;
    if(!host_node->root) continue;
-   printf("Remove node %d\n", i);
    removeNode(host, i);
   }
 }

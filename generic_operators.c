@@ -202,7 +202,7 @@ void freeDataset(GP_Dataset* dataset){
 }
 
 //A procedure for performing 1 + lambda selection and reproduction
-Graph* GP_1_plus_lambda(Graph* population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer){
+Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer){
   //Access 1 + lambda environment using pointer
   GP_1_plus_lambda_env* env = (GP_1_plus_lambda_env*)GP_1_plus_lambda_env_pointer;
   Function_Set* fset = env->fset;
@@ -226,13 +226,13 @@ Graph* GP_1_plus_lambda(Graph* population, double* scores, uintptr_t GP_1_plus_l
   //We now know the next generation's parent
   env->winner_index = parent;
   env->winner_score = best_score;
-  Graph* new_pop = malloc(pop_size * sizeof(Graph));
+  Graph** new_pop = malloc(pop_size * sizeof(Graph*));
   for(int i = 0; i < pop_size; i++){
     if(i != parent){
-      new_pop[i] = *env->mutate(&population[parent], fset, mutation_rate);
+      new_pop[i] = env->mutate(population[parent], fset, mutation_rate);
     }
     else{
-      new_pop[i] = *duplicate_graph(&population[parent]);
+      new_pop[i] = duplicate_graph(population[parent]);
     }
   }
   free_graph_array(population, pop_size);
@@ -252,4 +252,27 @@ static bool compare(double candidate, double champion, bool maximise, bool neutr
     }
     return false;
   }
+}
+
+double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer){
+  GP_eval_env* eval_env = (GP_eval_env*)GP_eval_env_pointer;
+  GP_Dataset* dataset = eval_env->dataset;
+  Function_Set* fset = eval_env->fset;
+  int pop_size = eval_env->pop_size;
+  double* scores = malloc(pop_size * sizeof(double));
+  for(int i = 0; i < pop_size; i++){
+    scores[i] = gp_evaluate(population[i], dataset, fset);
+  }
+  return scores;
+}
+
+bool target_0(Graph** population, double* scores, uintptr_t target_0_env_pointer){
+  Target_0_env* target_env = (Target_0_env*)target_0_env_pointer;
+  int pop_size = target_env->pop_size;
+  for(int i = 0; i < pop_size; i++){
+    if(scores[i] == 0.0){
+      return true;
+    }
+  }
+  return false;
 }

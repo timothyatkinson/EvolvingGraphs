@@ -1,3 +1,6 @@
+#ifndef EA_H
+#define EA_H
+
 //C Libraries
 #include <time.h>
 #include <stdio.h>
@@ -15,14 +18,16 @@
 #include "morphism.h"
 
 typedef struct EAArgs {
-  Graph* (*initialisation)(uintptr_t init_env_pointer);
+  Graph** (*initialisation)(uintptr_t init_env_pointer);
   uintptr_t init_env_pointer;
-  double* (*evaluate)(Graph* population, uintptr_t evaluation_env_pointer);
+  double* (*evaluate)(Graph** population, uintptr_t evaluation_env_pointer);
   uintptr_t evaluation_env_pointer;
-  Graph* (*select_repopulate)(Graph* population, double* scores, uintptr_t select_repopulate_env_pointer);
+  Graph** (*select_repopulate)(Graph** population, double* scores, uintptr_t select_repopulate_env_pointer);
   uintptr_t select_repopulate_env_pointer;
-  bool (*termination)(Graph* population, double* scores, uintptr_t termination_env_pointer);
+  bool (*termination)(Graph** population, double* scores, uintptr_t termination_env_pointer);
   uintptr_t termination_env_pointer;
+  int (*popsize)(Graph** population, uintptr_t pop_size_env_pointer);
+  uintptr_t pop_size_env_pointer;
   bool maximise;
   int update;
   int generations;
@@ -35,4 +40,6 @@ typedef struct Result {
   bool terminated;
 } Result;
 
-Result* runEA(EAArgs* args);
+Result* run_EA(EAArgs* args);
+
+#endif
