@@ -1,4 +1,5 @@
 #include "evolutionary_algorithm.h"
+#include "utils.h"
 
 Result** run_multi(EAArgs** args, int runs){
   Result** results = malloc(runs * sizeof(Result*));
@@ -6,7 +7,9 @@ Result** run_multi(EAArgs** args, int runs){
     Result* r = run_EA(args[i]);
     results[i] = r;
     printf("%d, %lf                                                                                                                                     \n", r->generation, r->winning_score);
+    free(args[i]);
   }
+  free(args);
   return results;
 }
 
@@ -71,5 +74,7 @@ Result* run_EA(EAArgs* args){
   if(args->update > 0){
     printf("Generation %d TERMINATED with score %lf\r", generation, res->winning_score);
   }
+  free_graph_array(population, args->pop_size(population, args->pop_size_env_pointer));
+  free(scores);
   return res;
 }

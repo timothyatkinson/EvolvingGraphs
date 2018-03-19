@@ -241,13 +241,13 @@ Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus
 
 static bool compare(double candidate, double champion, bool maximise, bool neutral_drift){
   if(maximise){
-    if(candidate > champion || (candidate == champion && neutral_drift)){
+    if(candidate > champion || (candidate >= champion && neutral_drift)){
       return true;
     }
     return false;
   }
   else{
-    if(candidate < champion || (candidate == champion && neutral_drift)){
+    if(candidate < champion || (candidate <= champion && neutral_drift)){
       return true;
     }
     return false;
