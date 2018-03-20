@@ -1,0 +1,156 @@
+Main = init_depth; [growOut]; ([growFunc, growInput]; closeFunc!)!; removeDepth!; unmark!
+
+init_depth
+(
+  a : list
+)
+[
+  (n0, a:"OUT")
+  |
+]
+=>
+[
+  (n0(R), a:0:"OUT")
+  |
+]
+interface = {
+  n0
+}
+
+growOut
+(
+  a : list;
+  f : string;
+  d, ar : int
+)
+[1.0]
+[
+  (n0(R), a : d : "OUT")
+  (n1(R), "FunctionSet":f:ar)
+  |
+]
+=>
+[
+  (n0, a : d : "OUT")
+  (n1(R), "FunctionSet":f:ar)
+  (n2(R), d + 1 : f)
+  |
+  (e0, n0, n2, 0)
+  (e1, n2, n2, ar)
+]
+interface = {
+  n0, n1
+}
+
+growFunc
+(
+  s, f : string;
+  d, dm, ar, o : int
+)
+[1.0]
+[
+  (n0(R), d : s)
+  (n1(R), "FunctionSet":f:ar)
+  (n2(R), "Depth":dm)
+  |
+  (e0, n0, n0, o)
+]
+=>
+[
+  (n0(R), d : s)
+  (n1(R), "FunctionSet":f:ar)
+  (n2(R), "Depth":dm)
+  (n3(R), d + 1 : f)
+  |
+  (e0, n0, n0, o - 1)
+  (e1, n0, n3, o - 1)
+  (e2, n3, n3, ar)
+]
+interface = {
+  n0, n1, n2
+}
+where o > 0 and d < dm - 1
+
+growInput
+(
+  s : string;
+  d, dm, i, o : int
+)
+[1.0]
+[
+  (n0(R), d : s)
+  (n1, i : "IN")
+  (n2(R), "Depth":dm)
+  |
+  (e0, n0, n0, o)
+]
+=>
+[
+  (n0(R), d : s)
+  (n1, i : "IN")
+  (n2(R), "Depth":dm)
+  |
+  (e0, n0, n0, o - 1)
+  (e1, n0, n1, o - 1)
+]
+interface = {
+  n0, n1, n2
+}
+where o > 0 and d = dm - 1
+
+closeFunc
+(
+  a : list;
+  o : int
+)
+[
+  (n0(R), a)
+  |
+  (e0, n0, n0, o)
+]
+=>
+[
+  (n0, a)
+  |
+]
+interface = {
+  n0
+}
+where o = 0
+
+removeDepth
+(
+  s : string;
+  a : list;
+  d : int
+)
+[
+  (n0, a : d : s)
+  |
+]
+=>
+[
+  (n0, a : s #blue)
+  |
+]
+interface = {
+  n0
+}
+where s != "IN"
+
+unmark
+(
+  a : list
+)
+[
+  (n0, a # blue)
+  |
+]
+=>
+[
+  (n0, a)
+  |
+]
+interface = {
+  n0
+}

@@ -48,6 +48,11 @@ typedef struct Target_0_env{
   int pop_size;
 } Target_0_env;
 
+typedef struct Target_x_env{
+  int pop_size;
+  double x;
+} Target_x_env;
+
 typedef struct Fixed_pop_env{
   int pop_size;
 } Fixed_pop_env;
@@ -62,6 +67,8 @@ Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus
 
 //Evaluates a computational network against a dataset
 double gp_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
+//Evaluates a computational network against a dataset, printing the result
+double gp_print_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
 //Evaluates a whole population using gp_evaluate
 double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer);
 //returns 0 when a population contains an individual scoring exactly 0

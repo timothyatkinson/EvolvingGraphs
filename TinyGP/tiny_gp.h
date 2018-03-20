@@ -13,8 +13,10 @@
 typedef struct Tiny_GP_init_env{
   Function_Set* fset;
   GP_Dataset* dataset;
-  int depth;
+  int inputs;
+  int outputs;
   int pop_size;
+  int depth;
 } Tiny_GP_init_env;
 
 Tiny_GP_init_env* default_tiny_gp_init_env(GP_Dataset* dataset, Function_Set* fset);
