@@ -1,0 +1,26 @@
+Main = [mutate_input]
+
+mutate_input
+(
+  a, b, c, d : list;
+  s : string
+)
+[1.0]
+[
+  (n0, a : s)
+  (n1, b : "IN")
+  (n2, c : "IN")
+  |
+  (e0, n0, n1, d#blue)
+]
+=>
+[
+  (n0, a : s)
+  (n1, b : "IN")
+  (n2, c : "IN")
+  |
+  (e0, n0, n2, d)
+]
+interface = {
+  n0, n1, n2
+}

@@ -1,0 +1,29 @@
+Main = [crossover_point]
+
+crossover_point
+(
+  a, b, c, d, e, f : list
+)
+[1.0]
+[
+  (n0, a #blue)
+  (n1, b #blue)
+  (n2, c #red)
+  (n3, d #red)
+  |
+  (e0, n0, n1, e #blue)
+  (e0, n2, n3, f #red)
+]
+=>
+[
+  (n0, a #blue)
+  (n1, b #blue)
+  (n2, c #red)
+  (n3, d #red)
+  |
+  (e0, n0, n3, e #blue)
+  (e0, n2, n1, f #red)
+]
+interface = {
+  n0, n1, n2, n3
+}

@@ -1,5 +1,60 @@
 #include "utils.h"
 
+Graph* disjoint_union(Graph* red, Graph* blue){
+  Graph *graph_copy = newGraph(100000, 100000);
+  int node_mapping_red[red->nodes.size];
+  int node_mapping_blue[blue->nodes.size];
+  //Copy nodes
+  for(int i = 0; i < red->nodes.size; i++){
+     Node *host_node = getNode(red, i);
+     if(host_node == NULL || host_node->index == -1) continue;
+     node_mapping_red[i] = addNode(graph_copy, host_node->root, makeHostLabel(1, host_node->label.length, copyHostList(host_node->label.list)));
+  }
+  for(int i = 0; i < blue->nodes.size; i++){
+     Node *host_node = getNode(blue, i);
+     if(host_node == NULL || host_node->index == -1) continue;
+     node_mapping_blue[i] = addNode(graph_copy, host_node->root, makeHostLabel(3, host_node->label.length, copyHostList(host_node->label.list)));
+  }
+  //Copy edges
+  for(int i = 0; i < red->edges.size; i++){
+     Edge *host_edge = getEdge(red, i);
+     if(host_edge == NULL || host_edge->index == -1) continue;
+     addEdge(graph_copy, makeHostLabel(1, host_edge->label.length, copyHostList(host_edge->label.list)), node_mapping_red[host_edge->source], node_mapping_red[host_edge->target]);
+  }
+  for(int i = 0; i < blue->edges.size; i++){
+     Edge *host_edge = getEdge(blue, i);
+     if(host_edge == NULL || host_edge->index == -1) continue;
+     addEdge(graph_copy, makeHostLabel(3, host_edge->label.length, copyHostList(host_edge->label.list)), node_mapping_blue[host_edge->source], node_mapping_blue[host_edge->target]);
+  }
+  return graph_copy;
+}
+
+Graph* get_red(Graph* red_blue){
+  return get_mark(red_blue, 1, 0);
+}
+
+Graph* get_blue(Graph* red_blue){
+  return get_mark(red_blue, 3, 0);
+}
+
+Graph* get_mark(Graph* multi_mark, int mark, int target_mark){
+  Graph *graph_copy = newGraph(100000, 100000);
+  int node_mapping[multi_mark->nodes.size];
+  //Copy nodes
+  for(int i = 0; i < multi_mark->nodes.size; i++){
+     Node *host_node = getNode(multi_mark, i);
+     if(host_node == NULL || host_node->index == -1 || host_node->label.mark != mark) continue;
+     node_mapping[i] = addNode(graph_copy, host_node->root, makeHostLabel(target_mark, host_node->label.length, copyHostList(host_node->label.list)));
+  }
+  //Copy edges
+  for(int i = 0; i < multi_mark->edges.size; i++){
+     Edge *host_edge = getEdge(multi_mark, i);
+     if(host_edge == NULL || host_edge->index == -1 || host_edge->label.mark != mark) continue;
+     addEdge(graph_copy, makeHostLabel(target_mark, host_edge->label.length, copyHostList(host_edge->label.list)), node_mapping[host_edge->source], node_mapping[host_edge->target]);
+  }
+  return graph_copy;
+}
+
 //Graph duplication function
 Graph* duplicate_graph(Graph *graph)
 {

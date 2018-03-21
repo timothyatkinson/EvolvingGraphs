@@ -14,10 +14,21 @@ int main(void){
   env->dataset = dataset;
   env->inputs = 3;
   env->outputs = 1;
-  env->depth = 5;
+  env->depth = 3;
   env->pop_size = 100;
 
   Graph** population = tiny_gp_init((uintptr_t)env);
 
   gp_print_evaluate(population[99], dataset, fset);
+
+  printfGraph(tiny_gp_mutate(population[99], fset, 0.33));
+
+  Graph* dis = disjoint_union(population[98], population[99]);
+
+  printfGraph(dis);
+
+  printfGraph(get_red(dis));
+  printfGraph(get_blue(dis));
+  Graph* cros = tiny_gp_crossover(population[98], population[99]);
+  printfGraph(cros);
 }

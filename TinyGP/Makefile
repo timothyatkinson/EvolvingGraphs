@@ -1,6 +1,6 @@
 INCDIR=../PGP2/include
 LIBDIR=../PGP2/lib
-GP2_OBJECTS = tiny_gp_init
+GP2_OBJECTS = tiny_gp_init tiny_gp_const_mutate tiny_gp_node_mutate tiny_gp_crossover
 OBJECTS := *c ../common_functions.c ../evolutionary_algorithm.c ../generic_operators.c ../utils.c
 CC=gcc
 

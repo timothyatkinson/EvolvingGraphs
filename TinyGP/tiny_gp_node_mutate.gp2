@@ -1,0 +1,24 @@
+Main = [mutate_node]
+
+mutate_node
+(
+  a : list;
+  n : int;
+  s, f : string
+)
+[1.0]
+[
+  (n0(R), "FunctionSet" : f : n)
+  (n1, a : s # blue)
+  |
+]
+=>
+[
+  (n0(R), "FunctionSet" : f : n)
+  (n1, a : f)
+  |
+]
+interface = {
+  n0, n1
+}
+where s != f

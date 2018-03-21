@@ -28,6 +28,6 @@ Fixed_pop_env* default_tiny_gp_pop_size_env();
 
 Graph** tiny_gp_init(uintptr_t env_pointer);
 Graph* tiny_gp_mutate(Graph* host, Function_Set* fset, double mutation_rate);
-Graph* tiny_gp_crossover(Graph* hostA, Graph* hostB, Function_Set* fset);
+Graph* tiny_gp_crossover(Graph* hostA, Graph* hostB);
 
 #endif
