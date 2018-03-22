@@ -34,24 +34,42 @@ int tiny_gp_const_mutate_execute(Graph* host_graph)
    emptyPot(tiny_gp_const_mutate_pot);
    M_tiny_gp_const_mutate_mutate_input = makeMorphism(3, 1, 5);
 
-   /* Rule Call */
-   emptyPot(tiny_gp_const_mutate_pot);
-   fillpottiny_gp_const_mutate_mutate_input(tiny_gp_const_mutate_pot, M_tiny_gp_const_mutate_mutate_input);
-   if(potSize(tiny_gp_const_mutate_pot) > 0){
-      MorphismHolder *holder = drawFromPot(tiny_gp_const_mutate_pot);
-      duplicateMorphism(holder->morphism, M_tiny_gp_const_mutate_mutate_input, tiny_gp_const_mutate_host);
-      freeMorphism(holder->morphism);
-      free(holder);
-      applytiny_gp_const_mutate_mutate_input(M_tiny_gp_const_mutate_mutate_input, false);
+   /* Try Statement */
+   /* Condition */
+   do
+   {
+      /* Rule Call */
+      emptyPot(tiny_gp_const_mutate_pot);
+      fillpottiny_gp_const_mutate_mutate_input(tiny_gp_const_mutate_pot, M_tiny_gp_const_mutate_mutate_input);
+      if(potSize(tiny_gp_const_mutate_pot) > 0){
+         MorphismHolder *holder = drawFromPot(tiny_gp_const_mutate_pot);
+         duplicateMorphism(holder->morphism, M_tiny_gp_const_mutate_mutate_input, tiny_gp_const_mutate_host);
+         freeMorphism(holder->morphism);
+         free(holder);
+         applytiny_gp_const_mutate_mutate_input(M_tiny_gp_const_mutate_mutate_input, false);
+         tiny_gp_const_mutate_success = true;
+      }
+      else
+      {
+         tiny_gp_const_mutate_success = false;
+         break;
+      }
+      emptyPot(tiny_gp_const_mutate_pot);
+   } while(false);
+
+   /* Then Branch */
+   if(tiny_gp_const_mutate_success)
+   {
+      /* Skip Statement */
       tiny_gp_const_mutate_success = true;
    }
+   /* Else Branch */
    else
    {
-      printf("No output graph: rule tiny_gp_const_mutate_mutate_input not applicable.\n");
-      tiny_gp_const_mutate_garbageCollect();
-      return 0;
+      tiny_gp_const_mutate_success = true;
+      /* Skip Statement */
+      tiny_gp_const_mutate_success = true;
    }
-   emptyPot(tiny_gp_const_mutate_pot);
    tiny_gp_const_mutate_garbageCollect();
    return 0;
 }

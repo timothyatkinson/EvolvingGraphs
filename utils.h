@@ -36,4 +36,5 @@ Graph* build_empty_host_graph();
 
 void free_graph_array(Graph** array, int graphs);
 void free_graph_data(Graph* graph);
+int random_int(int min, int max);
 #endif

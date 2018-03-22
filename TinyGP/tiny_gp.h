@@ -20,7 +20,7 @@ typedef struct Tiny_GP_init_env{
 } Tiny_GP_init_env;
 
 Tiny_GP_init_env* default_tiny_gp_init_env(GP_Dataset* dataset, Function_Set* fset);
-GP_1_plus_lambda_env* default_tiny_gp_select_env(Function_Set* fset);
+GP_tournament_env* default_tiny_gp_select_env(Function_Set* fset);
 GP_eval_env* default_tiny_gp_eval_env(GP_Dataset* dataset, Function_Set* fset);
 Target_x_env* default_tiny_gp_termination_env();
 EAArgs* default_tiny_gp_EAArgs(GP_Dataset* dataset, Function_Set* fset);

@@ -190,3 +190,9 @@ void free_graph_data(Graph* graph){
      }
   }
 }
+
+//Random integer from min (inclusive) to max (exclusive)
+int random_int(int min, int max){
+   int nu_max = max - 1;
+   return min + rand() / (RAND_MAX / (nu_max - min + 1) + 1);
+}

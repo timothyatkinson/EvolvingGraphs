@@ -38,6 +38,17 @@ typedef struct GP_1_plus_lambda_env{
     bool neutral_drift;
 } GP_1_plus_lambda_env;
 
+typedef struct GP_tournament_env{
+    Graph* (*mutate)(Graph* host, Function_Set* fset, double mutation_rate);
+    Function_Set* fset;
+    double mutation_rate;
+    Graph* (*crossover)(Graph* hostA, Graph* hostB);
+    double crossover_p;
+    int pop_size;
+    int tournament_size;
+    bool maximise;
+} GP_tournament_env;
+
 typedef struct GP_eval_env{
     Function_Set* fset;
     GP_Dataset* dataset;
@@ -61,9 +72,11 @@ typedef struct Fixed_pop_env{
 GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_min, double rand_max, int outputs, int rows);
 void freeDataset(GP_Dataset* dataset);
 
-//Performs a 1 plus Lambda select + select_repopulate
-
+//Performs a 1 plus Lambda select + repopulate
 Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus_lambda_env_pointer);
+
+//Performs a tournament selection select + repopulate
+Graph** GP_tournament_selection(Graph** population, double* scores, uintptr_t GP_tournament_env_pointer);
 
 //Evaluates a computational network against a dataset
 double gp_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
@@ -73,6 +86,7 @@ double gp_print_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* f
 double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer);
 //returns 0 when a population contains an individual scoring exactly 0
 bool target_0(Graph** population, double* scores, uintptr_t target_0_env);
-
+//returns 0 when a population contains an individual scoring <= x
+bool target_x(Graph** population, double* scores, uintptr_t target_x_env_pointer);
 int fixed_pop_size(Graph** population, uintptr_t pop_size_env);
 #endif

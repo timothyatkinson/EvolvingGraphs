@@ -2,7 +2,7 @@
 
 //Function for comparing two scores
 static bool compare(double candidate, double champion, bool maximise, bool neutral_drift);
-
+static int tournament(double* scores, int pop_size, int tournament_size, bool maximise);
 
 //Loads a dataset for Genetic Programming.
 GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_min, double rand_max, int outputs, int rows){
@@ -402,6 +402,50 @@ Graph** GP_1_plus_lambda(Graph** population, double* scores, uintptr_t GP_1_plus
   return new_pop;
 }
 
+static int tournament(double* scores, int pop_size, int tournament_size, bool maximise){
+  int winner = -1;
+  double winner_score = -1;
+  for(int i = 0; i < tournament_size; i++){
+    int candidate = random_int(0, pop_size);
+    if(winner == -1 || compare(scores[candidate], winner_score, maximise, false)){
+      winner = candidate;
+      winner_score = scores[candidate];
+    }
+  }
+  return winner;
+}
+
+Graph** GP_tournament_selection(Graph** population, double* scores, uintptr_t GP_tournament_env_pointer){
+  GP_tournament_env* env = (GP_tournament_env*)GP_tournament_env_pointer;
+  Function_Set* fset = env->fset;
+  double mutation_rate = env->mutation_rate;
+  int pop_size = env->pop_size;
+  double crossover_p = env->crossover_p;
+  int tournament_size = env->tournament_size;
+  bool maximise = env->maximise;
+
+  Graph** new_pop = malloc(pop_size * sizeof(Graph*));
+  for(int i = 0; i < pop_size; i++){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= crossover_p){
+      Graph* parent_1 = population[tournament(scores, pop_size, tournament_size, maximise)];
+      Graph* parent_2 = population[tournament(scores, pop_size, tournament_size, maximise)];
+      Graph* children = env->crossover(parent_1, parent_2);
+      new_pop[i] = get_red(children);
+      freeGraph(children);
+    }
+    else{
+      int parent_id = tournament(scores, pop_size, tournament_size, maximise);
+      Graph* parent = population[parent_id];
+      Graph* child = env->mutate(parent, fset, mutation_rate);
+      new_pop[i] = child;
+    }
+  }
+  free_graph_array(population, pop_size);
+  return new_pop;
+
+}
+
 static bool compare(double candidate, double champion, bool maximise, bool neutral_drift){
   if(maximise){
     if(candidate > champion || (candidate >= champion && neutral_drift)){
@@ -434,6 +478,18 @@ bool target_0(Graph** population, double* scores, uintptr_t target_0_env_pointer
   int pop_size = target_env->pop_size;
   for(int i = 0; i < pop_size; i++){
     if(scores[i] <= 0.0){
+      return true;
+    }
+  }
+  return false;
+}
+
+bool target_x(Graph** population, double* scores, uintptr_t target_x_env_pointer){
+  Target_x_env* target_env = (Target_x_env*)target_x_env_pointer;
+  int pop_size = target_env->pop_size;
+  double x = target_env->x;
+  for(int i = 0; i < pop_size; i++){
+    if(scores[i] <= x){
       return true;
     }
   }

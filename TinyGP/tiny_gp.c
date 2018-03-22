@@ -12,6 +12,75 @@ static void clean_graph_init(Graph* host);
 static void prepare_graph_mutate(Graph* host, Function_Set* fset);
 static void clean_graph_mutate(Graph* host);
 
+Tiny_GP_init_env* default_tiny_gp_init_env(GP_Dataset* dataset, Function_Set* fset){
+  Tiny_GP_init_env* env = malloc(sizeof(Tiny_GP_init_env));
+  env->fset =fset;
+  env->dataset = dataset;
+  env->depth = 5;
+  env->pop_size = 100;
+  env->inputs = dataset->inputs;
+  env->outputs = dataset->outputs;
+  return env;
+}
+
+GP_tournament_env* default_tiny_gp_select_env(Function_Set* fset){
+  GP_tournament_env* env = malloc(sizeof(GP_tournament_env));
+  env->fset = fset;
+  env->mutation_rate = 0.05;
+  env->mutate = tiny_gp_mutate;
+  env->crossover = tiny_gp_crossover;
+  env->crossover_p = 0.9;
+  env->tournament_size = 3;
+  env->pop_size = 100;
+  env->maximise = false;
+  return env;
+}
+
+//A default environment for evaluating GP individuals using gp_evaluate_population
+GP_eval_env* default_tiny_gp_eval_env(GP_Dataset* dataset, Function_Set* fset){
+  GP_eval_env* env = malloc(sizeof(GP_eval_env));
+  env->dataset = dataset;
+  env->fset = fset;
+  env->pop_size = 100;
+  return env;
+}
+
+Target_x_env* default_tiny_gp_termination_env(){
+  Target_x_env* env = malloc(sizeof(Target_x_env));
+  env->pop_size = 100;
+  env->x = 0.01;
+  return env;
+}
+
+Fixed_pop_env* default_tiny_gp_pop_size_env(){
+  Fixed_pop_env* env = malloc(sizeof(Fixed_pop_env));
+  env->pop_size = 100;
+  return env;
+}
+
+EAArgs* default_tiny_gp_EAArgs(GP_Dataset* dataset, Function_Set* fset){
+  uintptr_t init_pointer = (uintptr_t)default_tiny_gp_init_env(dataset, fset);
+  uintptr_t select_pointer = (uintptr_t)default_tiny_gp_select_env(fset);
+  uintptr_t eval_pointer = (uintptr_t)default_tiny_gp_eval_env(dataset, fset);
+  uintptr_t term_pointer = (uintptr_t)default_tiny_gp_termination_env();
+  uintptr_t pop_pointer = (uintptr_t)default_tiny_gp_pop_size_env();
+  EAArgs* args = malloc(sizeof(EAArgs));
+  args->initialisation = tiny_gp_init;
+  args->init_env_pointer = init_pointer;
+  args->evaluate = gp_evaluate_population;
+  args->evaluation_env_pointer = eval_pointer;
+  args->select_repopulate = GP_tournament_selection;
+  args->select_repopulate_env_pointer = select_pointer;
+  args->termination = target_x;
+  args->termination_env_pointer = term_pointer;
+  args->pop_size = fixed_pop_size;
+  args->pop_size_env_pointer = pop_pointer;
+  args->maximise = false;
+  args->generations = 100;
+  args->update = 1;
+  return args;
+}
+
 //Generates a population of CGP individuals.
 Graph** tiny_gp_init(uintptr_t env_pointer){
   //Access initialisation environment using pointer
@@ -39,7 +108,6 @@ Graph** tiny_gp_init(uintptr_t env_pointer){
 
     //Cleanup graph (removing meta data from prepare_graph_init)
     clean_graph_init(population[i]);
-        printfGraph(population[i]);
   }
 
   //Return
@@ -110,7 +178,7 @@ Graph* tiny_gp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
     return new_graph;
 }
 
-
+//Swaps two random sub-trees. Returns a graph with one child red and one child blue... these can be extracted with util.c's get_red and get_blue functions.
 Graph* tiny_gp_crossover(Graph* hostA, Graph* hostB){
   Graph* together = disjoint_union(hostA, hostB);
 

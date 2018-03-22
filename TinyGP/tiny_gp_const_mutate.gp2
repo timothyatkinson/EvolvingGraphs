@@ -1,4 +1,4 @@
-Main = [mutate_input]
+Main = try [mutate_input]
 
 mutate_input
 (

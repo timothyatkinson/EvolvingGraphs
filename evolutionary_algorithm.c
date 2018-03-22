@@ -27,7 +27,7 @@ Result* run_EA(EAArgs* args){
         bestScore = bestScore * -1.0;
       }
       int winner = -1;
-      for(int i = 0; i < 5; i++){
+      for(int i = 0; i < popsize; i++){
         if(args->maximise){
           if(scores[i] > bestScore){
             bestScore = scores[i];

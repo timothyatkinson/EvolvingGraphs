@@ -1,4 +1,4 @@
-Main = [crossover_point]
+Main = [crossover_point]; {markRedFunc, markBlueFunc, markRedEdge, markBlueEdge, moveInputRed, moveInputBlue}!
 
 crossover_point
 (
@@ -26,4 +26,140 @@ crossover_point
 ]
 interface = {
   n0, n1, n2, n3
+}
+
+markRedFunc
+(
+  a, b, c : list;
+  s : string
+)
+[
+  (n0, a # red)
+  (n1, b : s # blue)
+  |
+  (e0, n0, n1, c # red)
+]
+=>
+[
+  (n0, a # red)
+  (n1, b : s # red)
+  |
+  (e0, n0, n1, c # red)
+]
+interface = {
+  n0, n1
+}
+where s != "IN"
+
+markBlueFunc
+(
+  a, b, c : list;
+  s : string
+)
+[
+  (n0, a # blue)
+  (n1, b : s # red)
+  |
+  (e0, n0, n1, c # blue)
+]
+=>
+[
+  (n0, a # blue)
+  (n1, b : s # blue)
+  |
+  (e0, n0, n1, c # blue)
+]
+interface = {
+  n0, n1
+}
+where s != "IN"
+
+markRedEdge
+(
+  a, b, c : list
+)
+[
+  (n0, a # red)
+  (n1, b #blue)
+  |
+  (e0, n0, n1, c #blue)
+]
+=>
+[
+  (n0, a # red)
+  (n1, b #blue)
+  |
+  (e0, n0, n1, c #red)
+]
+interface = {
+  n0, n1
+}
+
+markBlueEdge
+(
+  a, b, c : list
+)
+[
+  (n0, a # blue)
+  (n1, b # red)
+  |
+  (e0, n0, n1, c #red)
+]
+=>
+[
+  (n0, a # blue)
+  (n1, b # red)
+  |
+  (e0, n0, n1, c #blue)
+]
+interface = {
+  n0, n1
+}
+
+moveInputRed
+(
+  a, b, c, d : list;
+  x : int
+)
+[
+  (n0, a #red)
+  (n1, x : b : "IN" #blue)
+  (n2, x : c : "IN" #red)
+  |
+  (e0, n0, n1, d # red)
+]
+=>
+[
+  (n0, a #red)
+  (n1, x : b : "IN" #blue)
+  (n2, x : c : "IN" #red)
+  |
+  (e0, n0, n2, d # red)
+]
+interface = {
+  n0, n1, n2
+}
+
+moveInputBlue
+(
+  a, b, c, d : list;
+  x : int
+)
+[
+  (n0, a #blue)
+  (n1, x : b : "IN" #red)
+  (n2, x : c : "IN" #blue)
+  |
+  (e0, n0, n1, d # blue)
+]
+=>
+[
+  (n0, a #blue)
+  (n1, x : b : "IN" #red)
+  (n2, x : c : "IN" #blue)
+  |
+  (e0, n0, n2, d # blue)
+]
+interface = {
+  n0, n1, n2
 }
