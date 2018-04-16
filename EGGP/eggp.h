@@ -10,13 +10,12 @@
 #include "graph.h"
 #include "common.h"
 
-typedef struct CGP_init_env{
+typedef struct EGGP_init_env{
   Function_Set* fset;
   GP_Dataset* dataset;
   int nodes;
-  int max_arity;
   int pop_size;
-} CGP_init_env;
+} EGGP_init_env;
 
 EGGP_init_env* default_eggp_init_env(GP_Dataset* dataset, Function_Set* fset);
 GP_1_plus_lambda_env* default_eggp_select_env(Function_Set* fset);
