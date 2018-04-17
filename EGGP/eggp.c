@@ -121,8 +121,6 @@ Graph** eggp_init(uintptr_t env_pointer){
 
 //Mutates a EGGP individual (copies the individual, rather than overwriting).
 Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
-
-  int max_arity = get_max_arity(fset);
   //Copy the individual to mutate
   Graph* new_graph = duplicate_graph(host);
 
@@ -145,7 +143,7 @@ Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
         //Function mutation is possible
         double r = ((double)rand() / (double)RAND_MAX);
         if(r <= mutation_rate){
-          eggp_mutate_node_shuffle_execute(new_graph);
+          eggp_mutate_node_execute(new_graph);
         }
 
     }
