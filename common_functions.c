@@ -119,37 +119,52 @@ Function* get_function(Function_Set* fset, string name){
     return NULL;
 }
 
+void boolcheck(double* inputs, int count){
+  for(int i = 0; i < count; i++){
+    if(inputs[i] != 0.0 && inputs[i] != 1.0){
+      printf("Broken logic gate!\n\n");
+      exit(0);
+    }
+  }
+}
+
 double common_and(double* inputs){
+    boolcheck(inputs, 2);
     bool i0 = (inputs[0] == 1.0);
     bool i1 = (inputs[1] == 1.0);
     return i0 && i1;
 }
 
 double common_or(double* inputs){
+    boolcheck(inputs, 2);
     bool i0 = (inputs[0] == 1.0);
     bool i1 = (inputs[1] == 1.0);
     return i0 || i1;
 }
 
 double common_nand(double* inputs){
+    boolcheck(inputs, 2);
     bool i0 = (inputs[0] == 1.0);
     bool i1 = (inputs[1] == 1.0);
     return !(i0 && i1);
 }
 
 double common_nor(double* inputs){
+    boolcheck(inputs, 2);
     bool i0 = (inputs[0] == 1.0);
     bool i1 = (inputs[1] == 1.0);
     return !(i0 || i1);
 }
 
 double common_xor(double* inputs){
+    boolcheck(inputs, 2);
     bool i0 = (inputs[0] == 1.0);
     bool i1 = (inputs[1] == 1.0);
     return ((i0 && !i1) || (!i0 && i1));
 }
 
 double common_not(double* inputs){
+    boolcheck(inputs, 1);
     bool i0 = (inputs[0] == 1.0);
     return !i0;
 }

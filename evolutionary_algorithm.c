@@ -41,7 +41,8 @@ Result* run_EA(EAArgs* args){
           }
         }
       }
-      printf("Generation %d: winner %d has score %lf out of %d individuals\r", generation, winner, bestScore, popsize);
+      printf("Generation %d: winner %d has score %lf out of %d individuals", generation, winner, bestScore, popsize);
+      printf("\r");
     }
     generation = generation + 1;
   }

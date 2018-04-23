@@ -114,7 +114,6 @@ Graph** eggp_init(uintptr_t env_pointer){
     //Cleanup graph (removing meta data from prepare_graph_init)
     clean_graph_init(population[i]);
   }
-
   //Return
   return population;
 }
@@ -126,45 +125,34 @@ Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
 
   //Prepare the graph by loading in function set
   prepare_graph_mutate(new_graph, fset);
-  //Go through nodes in ordering, mutating functions and edges
-  for(int i = 0; i < new_graph->nodes.size; i++){
-     Node *host_node = getNode(new_graph, i);
+  int nodes = new_graph->nodes.size;
+  int edges = new_graph->edges.size;
+  int mutations = 0;
+  int num = new_graph->nodes.size + new_graph->edges.size;
 
-    //Checks if the node exists, is not rooted (e.g. not a function set node), has the correct format and is not an input node (which cannot be mutated)
-    if(host_node == NULL || host_node->index == -1) continue;
-    if(host_node->root) continue;
-    HostLabel label = host_node->label;
-    HostListItem *item = label.list->last;
-    if(item->atom.type != 's') break;
-
-    if(strcmp(item->atom.str, "IN") == 0) continue;
-
-    if (strcmp(item->atom.str, "OUT") != 0){
-        //Function mutation is possible
-        double r = ((double)rand() / (double)RAND_MAX);
-        if(r <= mutation_rate){
-          eggp_mutate_node_execute(new_graph);
-        }
-
+  for(int i = 0; i < num; i++){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= mutation_rate){
+      double r2 = ((double)rand() / (double)RAND_MAX);
+      if(r2 <= ((double)edges / (double)(num))){
+        eggp_mutate_edge_execute(new_graph);
+        mutations++;
+      }
+      else{
+        eggp_mutate_node_execute(new_graph);
+        mutations++;
+      }
     }
+  }
 
-    //Edge mutations. Can be done for output and function nodes.
-    int counter;
-    for(counter = 0; counter < host_node->out_edges.size + 2; counter++)
-    {
-       Edge *host_edge = getNthOutEdge(new_graph, host_node, counter);
-
-       //Check edge exists and is not a loop
-       if(host_edge == NULL || host_edge->index == -1) continue;
-       if(host_edge->source == host_edge->target) continue;
-
-       //Edge mutation is possible
-       double r = ((double)rand() / (double)RAND_MAX);
-       if(r <= mutation_rate){
-         eggp_mutate_edge_execute(new_graph);
-       }
-
-     }
+  if(mutations == 0){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= ((double)edges / (double)(num))){
+      eggp_mutate_edge_execute(new_graph);
+    }
+    else{
+      eggp_mutate_node_execute(new_graph);
+    }
   }
 
   //Clean graph (removing meta data from prepare_graph_mutate)
