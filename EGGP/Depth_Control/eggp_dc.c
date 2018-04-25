@@ -1,5 +1,9 @@
 #include "eggp_dc.h"
 #include "pgp2/eggp_dc_init/eggp_dc_init.h"
+#include "pgp2/add_depth/add_depth.h"
+#include "pgp2/eggp_dc_edge/eggp_dc_edge.h"
+#include "pgp2/eggp_dc_node/eggp_dc_node.h"
+#include "pgp2/remove_depth/remove_depth.h"
 
 //Util functions to prepare and clean a graph in the mutation procedure eggp_mutate
 static void prepare_graph_mutate(Graph* host, Function_Set* fset, int depth);
@@ -61,7 +65,7 @@ Graph** eggp_init_dc(uintptr_t env_pointer){
 //A default environment for running 1 plus lambda for EGGP
 GP_1_plus_lambda_dc_env* eggp_dc_select_env(Function_Set* fset, int depth){
   GP_1_plus_lambda_dc_env* env = malloc(sizeof(GP_1_plus_lambda_dc_env));
-  //env->mutate = eggp_mutate_dc;
+  env->mutate = eggp_mutate_dc;
   env->pop_size = 5;
   env->mutation_rate = 0.01;
   env->winner_index = -1;
@@ -73,6 +77,54 @@ GP_1_plus_lambda_dc_env* eggp_dc_select_env(Function_Set* fset, int depth){
   return env;
 }
 
+
+//Mutates a EGGP individual (copies the individual, rather than overwriting).
+Graph* eggp_mutate_dc(Graph* host, Function_Set* fset, int depth, double mutation_rate){
+  //Copy the individual to mutate
+  Graph* new_graph = duplicate_graph(host);
+
+  //Prepare the graph by loading in function set
+  prepare_graph_mutate(new_graph, fset, depth);
+  int nodes = new_graph->nodes.size;
+  int edges = new_graph->edges.size;
+  int mutations = 0;
+  int num = new_graph->nodes.size + new_graph->edges.size;
+
+  for(int i = 0; i < num; i++){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= mutation_rate){
+      double r2 = ((double)rand() / (double)RAND_MAX);
+      if(r2 <= ((double)edges / (double)(num))){
+        add_depth_execute(new_graph);
+        eggp_dc_edge_execute(new_graph);
+        remove_depth_execute(new_graph);
+        mutations++;
+      }
+      else{
+        eggp_dc_node_execute(new_graph);
+        mutations++;
+      }
+    }
+  }
+
+  if(mutations == 0){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= ((double)edges / (double)(num))){
+      add_depth_execute(new_graph);
+      eggp_dc_edge_execute(new_graph);
+      remove_depth_execute(new_graph);
+    }
+    else{
+      eggp_dc_node_execute(new_graph);
+    }
+  }
+
+  //Clean graph (removing meta data from prepare_graph_mutate)
+  clean_graph_mutate(new_graph);
+
+  return new_graph;
+}
+
 //A default environment for evaluating GP individuals using gp_evaluate_population
 GP_eval_env* eggp_dc_eval_env(GP_Dataset* dataset, Function_Set* fset){
   GP_eval_env* env = malloc(sizeof(GP_eval_env));
@@ -82,9 +134,11 @@ GP_eval_env* eggp_dc_eval_env(GP_Dataset* dataset, Function_Set* fset){
   return env;
 }
 
-Target_0_env* eggp_dc_termination_env(){
-  Target_0_env* env = malloc(sizeof(Target_0_env));
+
+Target_x_env* eggp_dc_termination_env(){
+  Target_x_env* env = malloc(sizeof(Target_x_env));
   env->pop_size = 5;
+  env->x = 0.01;
   return env;
 }
 
@@ -107,7 +161,7 @@ EAArgs* eggp_dc_EAArgs(GP_Dataset* dataset, Function_Set* fset, int depth){
   args->evaluation_env_pointer = eval_pointer;
   args->select_repopulate = GP_1_plus_lambda_dc;
   args->select_repopulate_env_pointer = select_pointer;
-  args->termination = target_0;
+  args->termination = target_x;
   args->termination_env_pointer = term_pointer;
   args->pop_size = fixed_pop_size;
   args->pop_size_env_pointer = pop_pointer;

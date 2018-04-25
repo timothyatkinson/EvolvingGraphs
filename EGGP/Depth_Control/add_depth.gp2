@@ -1,0 +1,112 @@
+Main = {initInput, initOutput}!; initNode!; incIn!; incOut!; unmark!
+
+initInput
+(
+  a : list
+)
+[
+  (n0, a:"IN")
+  |
+]
+=>
+[
+  (n0, a:0:0:"IN"#red)
+  |
+]
+interface = { n0 }
+
+initOutput
+(
+  a : list
+)
+[
+  (n0, a:"OUT")
+  |
+]
+=>
+[
+  (n0, a:0:-1:"OUT"#red)
+  |
+]
+interface = { n0 }
+
+initNode
+(
+  a : list;
+  s : string
+)
+[
+  (n0, a:s)
+  |
+]
+=>
+[
+  (n0, a:0:0:s#red)
+  |
+]
+interface = { n0 }
+
+incIn
+(
+  a, b, c : list;
+  q, r, s, t : int;
+  x, y : string
+)
+[
+  (n0, a : q : r : x #red)
+  (n1, b : s : t : y #red)
+  |
+  (e0, n0, n1, c)
+]
+=>
+[
+  (n0, a : s + 1 : r : x #red)
+  (n1, b : s : t : y #red)
+  |
+  (e0, n0, n1, c)
+]
+interface = {
+  n0, n1
+}
+where q < s + 1
+
+incOut
+(
+  a, b, c : list;
+  q, r, s, t : int;
+  x, y : string
+)
+[
+  (n0, a : q : r : x #red)
+  (n1, b : s : t : y #red)
+  |
+  (e0, n0, n1, c)
+]
+=>
+[
+  (n0, a : q : r : x #red)
+  (n1, b : s : r + 1 : y #red)
+  |
+  (e0, n0, n1, c)
+]
+interface = {
+  n0, n1
+}
+where t < r + 1
+
+unmark
+(
+  a : list
+)
+[
+  (n0, a#red)
+  |
+]
+=>
+[
+  (n0, a)
+  |
+]
+interface = {
+  n0
+}

@@ -1,0 +1,37 @@
+Main = removeDepth!; unmark!
+
+removeDepth
+(
+  a : list;
+  x, y : int;
+  s : string
+)
+[
+  (n0, a : x : y : s)
+  |
+]
+=>
+[
+  (n0, a : s#red)
+  |
+]
+interface = {
+  n0
+}
+
+unmark
+(
+  a : list
+)
+[
+  (n0, a#red)
+  |
+]
+=>
+[
+  (n0, a)
+  |
+]
+interface = {
+  n0
+}

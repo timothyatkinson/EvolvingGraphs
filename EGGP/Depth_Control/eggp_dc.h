@@ -21,7 +21,7 @@ typedef struct EGGP_init_dc_env{
 
 
 typedef struct GP_1_plus_lambda_dc_env{
-    Graph* (*mutate)(Graph* host, Function_Set* fset, double mutation_rate, int depth);
+    Graph* (*mutate)(Graph* host, Function_Set* fset, int depth, double mutation_rate);
     Function_Set* fset;
     double mutation_rate;
     int winner_index;
@@ -35,7 +35,7 @@ typedef struct GP_1_plus_lambda_dc_env{
 EGGP_init_dc_env* eggp_dc_init_env(GP_Dataset* dataset, Function_Set* fset, int depth);
 GP_1_plus_lambda_dc_env* eggp_dc_select_env(Function_Set* fset, int depth);
 GP_eval_env* eggp_dc_eval_env(GP_Dataset* dataset, Function_Set* fset);
-Target_0_env* eggp_dc_termination_env();
+Target_x_env* eggp_dc_termination_env();
 EAArgs* eggp_dc_EAArgs(GP_Dataset* dataset, Function_Set* fset, int depth);
 Fixed_pop_env* eggp_dc_pop_size_env();
 

@@ -1,6 +1,6 @@
 INCDIR=../../PGP2/include
 LIBDIR=../../PGP2/lib
-GP2_OBJECTS = eggp_dc_init
+GP2_OBJECTS = eggp_dc_init add_depth eggp_dc_edge eggp_dc_node remove_depth
 OBJECTS := *c ../../common_functions.c ../../evolutionary_algorithm.c ../../generic_operators.c ../../utils.c
 CC=gcc
 
