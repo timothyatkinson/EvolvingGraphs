@@ -6,7 +6,7 @@ Result** run_multi(EAArgs** args, int runs){
   for(int i = 0; i < runs; i++){
     Result* r = run_EA(args[i]);
     results[i] = r;
-    printf("%d, %lf                                                                                                                                     \n", r->generation, r->winning_score);
+    printf("%d, %lf                                                                                                                                                                  \n", r->generation, r->winning_score);
     free(args[i]);
   }
   free(args);
@@ -42,7 +42,11 @@ Result* run_EA(EAArgs* args){
         }
       }
       printf("Generation %d: winner %d has score %lf out of %d individuals", generation, winner, bestScore, popsize);
-      printf("\r");
+      printf(" {");
+      for(int i = 0; i < popsize && i < 5; i++){
+        printf(" %lf (%d),", scores[i], count_active_nodes(population[i], 0, 0));
+      }
+      printf("}                               \r");
     }
     generation = generation + 1;
   }

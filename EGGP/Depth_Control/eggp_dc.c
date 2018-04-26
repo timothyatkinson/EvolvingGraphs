@@ -67,7 +67,7 @@ GP_1_plus_lambda_dc_env* eggp_dc_select_env(Function_Set* fset, int depth){
   GP_1_plus_lambda_dc_env* env = malloc(sizeof(GP_1_plus_lambda_dc_env));
   env->mutate = eggp_mutate_dc;
   env->pop_size = 5;
-  env->mutation_rate = 0.01;
+  env->mutation_rate = 0.04;
   env->winner_index = -1;
   env->winner_score = 99999999.9;
   env->fset = fset;
@@ -89,7 +89,6 @@ Graph* eggp_mutate_dc(Graph* host, Function_Set* fset, int depth, double mutatio
   int edges = new_graph->edges.size;
   int mutations = 0;
   int num = new_graph->nodes.size + new_graph->edges.size;
-
   for(int i = 0; i < num; i++){
     double r = ((double)rand() / (double)RAND_MAX);
     if(r <= mutation_rate){
@@ -342,13 +341,13 @@ static void clean_graph_mutate(Graph* host){
 
 static bool compare(double candidate, double champion, bool maximise, bool neutral_drift){
   if(maximise){
-    if(candidate > champion || (candidate >= champion && neutral_drift)){
+    if(candidate > champion || (candidate >= champion - 0.00000001 && neutral_drift)){
       return true;
     }
     return false;
   }
   else{
-    if(candidate < champion || (candidate <= champion && neutral_drift)){
+    if(candidate < champion || (candidate <= champion - 0.00000001 && neutral_drift)){
       return true;
     }
     return false;
