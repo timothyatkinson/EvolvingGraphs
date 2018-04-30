@@ -95,6 +95,30 @@ int count_active_nodes(Graph* hostG, int inputs, int outputs){
 	return count - (inputs + outputs);
 }
 
+//Counts the active nodes in a GP individual.
+int count_active_edges(Graph* hostG){
+	mark_active_blue(hostG);
+	int count = 0;
+	for(int host_index = 0; host_index < hostG->nodes.size; host_index++)
+	{
+		 Node *host_node = getNode(hostG, host_index);
+		 if(host_node == NULL || host_node->index == -1) continue;
+		 HostLabel label = host_node->label;
+		 if(label.mark > 0){
+        int counter = 0;
+       	for(counter = 0; counter < host_node->out_edges.size + 2; counter++)
+       	{
+       		Edge *host_edge = getNthOutEdge(hostG, host_node, counter);
+       		if(host_edge == NULL || host_edge->index == -1) continue;
+          count++;
+    		}
+    }
+	}
+	unmark_graph(hostG);
+  return count;
+}
+
+
 void mark_active_blue(Graph* hostG){
 
 	for(int host_index = 0; host_index < hostG->nodes.size; host_index++)

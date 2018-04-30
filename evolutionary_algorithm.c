@@ -44,9 +44,14 @@ Result* run_EA(EAArgs* args){
       printf("Generation %d: winner %d has score %lf out of %d individuals", generation, winner, bestScore, popsize);
       printf(" {");
       for(int i = 0; i < popsize && i < 5; i++){
-        printf(" %lf (%d),", scores[i], count_active_nodes(population[i], 0, 0));
+        if(scores[i] > 9999999.9){
+          printf(" BIG (%d),", count_active_nodes(population[i], 0, 0));
+        }
+        else{
+          printf(" %lf (%d),", scores[i], count_active_nodes(population[i], 0, 0));
+        }
       }
-      printf("}                               \r");
+      printf("}                                             \r");
     }
     generation = generation + 1;
   }

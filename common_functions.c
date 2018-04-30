@@ -94,6 +94,18 @@ Function_Set* get_common_fset(string fsetV){
         else if(strcmp(name, "mul") == 0){
           add_function(fset, "MUL", 2, common_mul);
         }
+        else if(strcmp(name, "sin") == 0){
+          add_function(fset, "SIN", 1, common_sin);
+        }
+        else if(strcmp(name, "cos") == 0){
+          add_function(fset, "COS", 1, common_cos);
+        }
+        else if(strcmp(name, "exp") == 0){
+          add_function(fset, "EXP", 1, common_exp);
+        }
+        else if(strcmp(name, "log") == 0){
+          add_function(fset, "LOG", 1, common_log);
+        }
         else{
           printf("Unknown function %s\n", name);
         }
@@ -190,6 +202,25 @@ double common_div(double* inputs){
 
 double common_mul(double* inputs){
     return inputs[0] * inputs[1];
+}
+
+double common_sin(double* inputs){
+    return sin(inputs[0]);
+}
+
+double common_cos(double* inputs){
+    return cos(inputs[0]);
+}
+
+double common_log(double* inputs){
+    if(inputs[0] <= 0.0){
+      return 1.0;
+    }
+    return log(inputs[0]);
+}
+
+double common_exp(double* inputs){
+    return exp(inputs[0]);
 }
 
 void freeFset(Function_Set* fset){

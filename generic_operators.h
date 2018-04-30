@@ -80,6 +80,13 @@ Graph** GP_tournament_selection(Graph** population, double* scores, uintptr_t GP
 
 //Evaluates a computational network against a dataset
 double gp_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
+
+//Evaluates a computational network against a dataset
+double gp_evaluate_square(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
+
+//Evaluates a computational network against a dataset
+double gp_evaluate_worth (Graph* individual, GP_Dataset* dataset, Function_Set* fset);
+
 //Evaluates a computational network against a dataset, printing the result
 double gp_print_evaluate(Graph* individual, GP_Dataset* dataset, Function_Set* fset);
 //Evaluates a whole population using gp_evaluate

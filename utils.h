@@ -22,6 +22,8 @@ void mark_active_children_blue(Graph* hostG, Node *node);
 void unmark_graph(Graph* hostG);
 //Counts the number of nodes connected to an output in a computational network
 int count_active_nodes(Graph* hostG, int inputs, int outputs);
+//Counts the number of edges connected to an output in a computational network
+int count_active_edges(Graph* hostG);
 //Copies 2 graphs into 1 graph, marking the first argument red and the second argument mark_active_blue
 Graph* disjoint_union(Graph* red, Graph* blue);
 //Returns the red component of a graph

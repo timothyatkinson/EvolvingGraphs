@@ -1,0 +1,142 @@
+Main = InitActive; [pickNode]; [mutateNode]; EndActive
+InitActive = initActiveNode; outActive!; propActive!
+EndActive = removeActiveEdge!; removeActive
+
+initActiveNode
+(
+	a : list
+)
+[
+	(n0, a)
+	|
+]
+=>
+[
+	(n0, a)
+	(n1(R), "Active"#grey)
+	|
+]
+interface = {
+	n0
+}
+
+outActive
+(
+	a : list
+)
+[
+	(n0, a:"OUT")
+	(n1(R), "Active"#grey)
+	|
+]
+=>
+[
+	(n0, a:"OUT")
+	(n1(R), "Active"#grey)
+	|
+	(e0, n1, n0, empty#dashed)
+]
+interface = {
+	n0, n1
+}
+where not edge(n1, n0)
+
+propActive
+(
+	a, b, c : list
+)
+[
+	(n0, a)
+	(n1, b)
+	(n2(R) , "Active"#grey)
+	|
+	(e0, n0, n1, c)
+]
+=>
+[
+	(n0, a)
+	(n1, b)
+	(n2(R) , "Active"#grey)
+	|
+	(e0, n0, n1, c)
+	(e1, n2, n1, empty#dashed)
+]
+interface = {
+	n0, n1, n2
+}
+where not edge(n2, n1)
+
+removeActiveEdge
+(
+	a : list
+)
+[
+	(n0, a)
+	(n1(R), "Active"#grey)
+	|
+	(e0, n1, n0, empty#dashed)
+]
+=>
+[
+	(n0, a)
+	(n1(R), "Active"#grey)
+	|
+]
+interface = {
+	n0, n1
+}
+
+removeActive
+()
+[
+	(n1(R), "Active"#grey)
+	|
+]
+=>
+[
+	|
+]
+interface = {}
+
+pickNode
+(
+	s : string
+)
+[
+	(n0, s)
+	(n2(R) , "Active"#grey)
+	|
+]
+=>
+[
+	(n0, s#blue)
+	(n2(R) , "Active"#grey)
+	|
+]
+interface =
+{
+	n0, n2
+}
+where s != "IN" and s != "OUT" and not edge(n2, n0)
+
+mutateNode
+(
+	b : list;
+	s, f : string
+)
+[
+	(n0, s#blue)
+	(f0(R), "FunctionSet":f:b)
+	|
+]
+=>
+[
+	(n0, f)
+	(f0(R), "FunctionSet":f:b)
+	|
+]
+interface =
+{
+	n0, f0
+}
+where s != f

@@ -3,6 +3,7 @@
 #include "pgp2/add_depth/add_depth.h"
 #include "pgp2/eggp_dc_edge/eggp_dc_edge.h"
 #include "pgp2/eggp_dc_node/eggp_dc_node.h"
+#include "pgp2/eggp_dc_fy/eggp_dc_fy.h"
 #include "pgp2/remove_depth/remove_depth.h"
 
 //Util functions to prepare and clean a graph in the mutation procedure eggp_mutate
@@ -67,7 +68,7 @@ GP_1_plus_lambda_dc_env* eggp_dc_select_env(Function_Set* fset, int depth){
   GP_1_plus_lambda_dc_env* env = malloc(sizeof(GP_1_plus_lambda_dc_env));
   env->mutate = eggp_mutate_dc;
   env->pop_size = 5;
-  env->mutation_rate = 0.04;
+  env->mutation_rate = 0.02;
   env->winner_index = -1;
   env->winner_score = 99999999.9;
   env->fset = fset;
@@ -100,7 +101,9 @@ Graph* eggp_mutate_dc(Graph* host, Function_Set* fset, int depth, double mutatio
         mutations++;
       }
       else{
-        eggp_dc_node_execute(new_graph);
+        add_depth_execute(new_graph);
+        eggp_dc_fy_execute(new_graph);
+        remove_depth_execute(new_graph);
         mutations++;
       }
     }
@@ -114,7 +117,9 @@ Graph* eggp_mutate_dc(Graph* host, Function_Set* fset, int depth, double mutatio
       remove_depth_execute(new_graph);
     }
     else{
-      eggp_dc_node_execute(new_graph);
+      add_depth_execute(new_graph);
+      eggp_dc_fy_execute(new_graph);
+      remove_depth_execute(new_graph);
     }
   }
 
@@ -177,7 +182,7 @@ Graph** GP_1_plus_lambda_dc(Graph** population, double* scores, uintptr_t GP_1_p
   Function_Set* fset = env->fset;
   double mutation_rate = env->mutation_rate;
   int winner_index = env->winner_index;
-  int winner_score = env->winner_score;
+  double winner_score = env->winner_score;
   int pop_size = env->pop_size;
   int depth = env->depth;
   bool maximise = env->maximise;
@@ -341,13 +346,13 @@ static void clean_graph_mutate(Graph* host){
 
 static bool compare(double candidate, double champion, bool maximise, bool neutral_drift){
   if(maximise){
-    if(candidate > champion || (candidate >= champion - 0.00000001 && neutral_drift)){
+    if(candidate > champion || (candidate >= champion - 0.000001 && neutral_drift)){
       return true;
     }
     return false;
   }
   else{
-    if(candidate < champion || (candidate <= champion - 0.00000001 && neutral_drift)){
+    if(candidate < champion || (candidate <= champion + 0.000001 && neutral_drift)){
       return true;
     }
     return false;
