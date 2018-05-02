@@ -23,7 +23,7 @@ static bool match_n0(Morphism *morphism)
       Node *host_node = getNode(a_edge_host, host_index);
       if(host_node == NULL || host_node->index == -1) continue;
       if(host_node->matched) continue;
-      if(host_node->label.mark != 3) continue;
+      if(host_node->label.mark == 0) continue;
       if(host_node->indegree < 0 || host_node->outdegree < 0 ||
          ((host_node->outdegree + host_node->indegree - 0 - 0 - 0) < 0)) continue;
 
@@ -95,7 +95,7 @@ static bool fillpot_n0(MorphismPot *pot, Morphism *morphism)
       Node *host_node = getNode(a_edge_host, host_index);
       if(host_node == NULL || host_node->index == -1) continue;
       if(host_node->matched) continue;
-      if(host_node->label.mark != 3) continue;
+      if(host_node->label.mark == 0) continue;
       if(host_node->indegree < 0 || host_node->outdegree < 0 ||
          ((host_node->outdegree + host_node->indegree - 0 - 0 - 0) < 0)) continue;
 

@@ -2,14 +2,14 @@
 
 #include "a_edge.h"
 
-bool a_edge_b3 = true;
+bool a_edge_b0 = true;
 
 static bool evaluateCondition(void)
 {
-   return (a_edge_b3);
+   return (a_edge_b0);
 }
 
-static void evaluatePredicatea_edge_3(Morphism *morphism)
+static void evaluatePredicatea_edge_0(Morphism *morphism)
 {
    Assignment assignment_1 = getAssignment(morphism, 1);
    /* If the variable is not yet assigned, return. */
@@ -32,8 +32,8 @@ static void evaluatePredicatea_edge_3(Morphism *morphism)
    array1[index1].type = 's';
    array1[index1++].str = "OUT";
 
-   if(!equalHostLists(array0, array1, list_length0, list_length1)) a_edge_b3 = true;
-   else a_edge_b3 = false;
+   if(!equalHostLists(array0, array1, list_length0, list_length1)) a_edge_b0 = true;
+   else a_edge_b0 = false;
 }
 
 static bool match_n0(Morphism *morphism);
@@ -89,11 +89,11 @@ static bool match_n0(Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_edge_3(morphism);
+            evaluatePredicatea_edge_0(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_edge_b3 = true;
+               a_edge_b0 = true;
                break;
             }
          }
@@ -210,11 +210,11 @@ static bool fillpot_n0(MorphismPot *pot, Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_edge_3(morphism);
+            evaluatePredicatea_edge_0(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_edge_b3 = true;
+               a_edge_b0 = true;
                break;
             }
          }

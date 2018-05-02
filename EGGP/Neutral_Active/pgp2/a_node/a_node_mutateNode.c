@@ -2,14 +2,14 @@
 
 #include "a_node.h"
 
-bool a_node_b5 = true;
+bool a_node_b2 = true;
 
 static bool evaluateCondition(void)
 {
-   return (a_node_b5);
+   return (a_node_b2);
 }
 
-static void evaluatePredicatea_node_5(Morphism *morphism)
+static void evaluatePredicatea_node_2(Morphism *morphism)
 {
    Assignment assignment_1 = getAssignment(morphism, 1);
    /* If the variable is not yet assigned, return. */
@@ -37,8 +37,8 @@ static void evaluatePredicatea_node_5(Morphism *morphism)
    array1[index1].type = 's';
    array1[index1++].str = var_2;
 
-   if(!equalHostLists(array0, array1, list_length0, list_length1)) a_node_b5 = true;
-   else a_node_b5 = false;
+   if(!equalHostLists(array0, array1, list_length0, list_length1)) a_node_b2 = true;
+   else a_node_b2 = false;
 }
 
 static bool match_n1(Morphism *morphism);
@@ -94,11 +94,11 @@ static bool match_n1(Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_node_5(morphism);
+            evaluatePredicatea_node_2(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_node_b5 = true;
+               a_node_b2 = true;
                break;
             }
          }
@@ -182,11 +182,11 @@ static bool match_n0(Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_node_5(morphism);
+            evaluatePredicatea_node_2(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_node_b5 = true;
+               a_node_b2 = true;
                break;
             }
          }
@@ -295,11 +295,11 @@ static bool fillpot_n1(MorphismPot *pot, Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_node_5(morphism);
+            evaluatePredicatea_node_2(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_node_b5 = true;
+               a_node_b2 = true;
                break;
             }
          }
@@ -383,11 +383,11 @@ static bool fillpot_n0(MorphismPot *pot, Morphism *morphism)
          {
             new_assignments += result;
             /* Update global booleans for the variable's predicates. */
-            evaluatePredicatea_node_5(morphism);
+            evaluatePredicatea_node_2(morphism);
             if(!evaluateCondition())
             {
                /* Reset the boolean variables in the predicates of this variable. */
-               a_node_b5 = true;
+               a_node_b2 = true;
                break;
             }
          }

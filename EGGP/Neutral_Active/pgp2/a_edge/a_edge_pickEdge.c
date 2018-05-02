@@ -2,103 +2,19 @@
 
 #include "a_edge.h"
 
-bool a_edge_b2 = true;
-
-static bool evaluateCondition(void)
-{
-   return (a_edge_b2);
-}
-
-static void evaluatePredicatea_edge_2(Morphism *morphism)
-{
-   int n0 = lookupNode(morphism, 0);
-   /* If the node is not yet matched by the morphism, return. */
-   if(n0 == -1) return;
-
-   int n2 = lookupNode(morphism, 2);
-   /* If the node is not yet matched by the morphism, return. */
-   if(n2 == -1) return;
-
-   Node *source = getNode(a_edge_host, n2);
-   bool edge_found = false;
-   int counter;
-   for(counter = 0; counter < source->out_edges.size + 2; counter++)
-   {
-      Edge *edge = getNthOutEdge(a_edge_host, source, counter);
-      if(edge != NULL && edge->target == n0)
-      {
-         a_edge_b2 = true;
-         edge_found = true;
-         break;
-      }
-   }
-   if(!edge_found) a_edge_b2 = false;
-}
-
-static bool match_n2(Morphism *morphism);
 static bool match_n0(Morphism *morphism);
 static bool match_e0(Morphism *morphism);
 static bool match_n1(Morphism *morphism, Edge *host_edge);
 
 bool matcha_edge_pickEdge(Morphism *morphism)
 {
-   if(3 > a_edge_host->number_of_nodes || 1 > a_edge_host->number_of_edges) return false;
-   if(match_n2(morphism)) return true;
+   if(2 > a_edge_host->number_of_nodes || 1 > a_edge_host->number_of_edges) return false;
+   if(match_n0(morphism)) return true;
    else
    {
       initialiseMorphism(morphism, a_edge_host);
       return false;
    }
-}
-
-static bool match_n2(Morphism *morphism)
-{
-   RootNodes *nodes;
-   for(nodes = getRootNodeList(a_edge_host); nodes != NULL; nodes = nodes->next)
-   {
-      Node *host_node = getNode(a_edge_host, nodes->index);
-      if(host_node == NULL) continue;
-      if(host_node->matched) continue;
-      if(host_node->label.mark != 4) continue;
-      if(host_node->indegree < 0 || host_node->outdegree < 0 ||
-         ((host_node->outdegree + host_node->indegree - 0 - 0 - 0) < 0)) continue;
-
-      HostLabel label = host_node->label;
-      bool match = false;
-      /* Label Matching */
-      int new_assignments = 0;
-      do
-      {
-         /* The rule list does not contain a list variable, so there is no
-          * match if the host list has a different length. */
-         if(label.length != 1) break;
-         HostListItem *item = label.list->first;
-         /* Matching rule atom 1. */
-         if(item->atom.type != 's') break;
-         else if(strcmp(item->atom.str, "Active") != 0) break;
-         match = true;
-      } while(false);
-
-      if(match)
-      {
-         addNodeMap(morphism, 2, host_node->index, new_assignments);
-         host_node->matched = true;
-         /* Update global booleans representing the node's predicates. */
-         evaluatePredicatea_edge_2(morphism);
-         bool next_match_result = false;
-         if(evaluateCondition()) next_match_result = match_n0(morphism);
-         if(next_match_result) return true;
-         else
-         {
-            /* Reset the boolean variables in the predicates of this node. */
-            a_edge_b2 = true;
-            removeNodeMap(morphism, 2);
-            host_node->matched = false;
-         }
-      }
-      else removeAssignments(morphism, new_assignments);
-   }
-   return false;
 }
 
 static bool match_n0(Morphism *morphism)
@@ -135,17 +51,11 @@ static bool match_n0(Morphism *morphism)
       {
          addNodeMap(morphism, 0, host_node->index, new_assignments);
          host_node->matched = true;
-         /* Update global booleans representing the node's predicates. */
-         evaluatePredicatea_edge_2(morphism);
-         bool next_match_result = false;
-         if(evaluateCondition()) next_match_result = match_e0(morphism);
-         if(next_match_result) return true;
+         if(match_e0(morphism)) return true;
          else
          {
-            /* Reset the boolean variables in the predicates of this node. */
-            a_edge_b2 = true;
-            removeNodeMap(morphism, 0);
-            host_node->matched = false;
+         removeNodeMap(morphism, 0);
+         host_node->matched = false;
          }
       }
       else removeAssignments(morphism, new_assignments);
@@ -277,17 +187,16 @@ void applya_edge_pickEdge(Morphism *morphism, bool record_changes)
    initialiseMorphism(morphism, a_edge_host);
 }
 
-static bool fillpot_n2(MorphismPot *pot, Morphism *morphism);
 static bool fillpot_n0(MorphismPot *pot, Morphism *morphism);
 static bool fillpot_e0(MorphismPot *pot, Morphism *morphism);
 static bool fillpot_n1(MorphismPot *pot, Morphism *morphism, Edge *host_edge);
 
 bool fillpota_edge_pickEdge(MorphismPot *pot, Morphism *morphism)
 {
-   if(3 > a_edge_host->number_of_nodes || 1 > a_edge_host->number_of_edges) return false;
+   if(2 > a_edge_host->number_of_nodes || 1 > a_edge_host->number_of_edges) return false;
    int oldPotsize = potSize(pot);
    morphism->weight = 1.000000;
-   fillpot_n2(pot, morphism);
+   fillpot_n0(pot, morphism);
    if(potSize(pot) > oldPotsize){
       initialiseMorphism(morphism, a_edge_host);
       return true;
@@ -297,56 +206,6 @@ bool fillpota_edge_pickEdge(MorphismPot *pot, Morphism *morphism)
       initialiseMorphism(morphism, a_edge_host);
       return false;
    }
-}
-
-static bool fillpot_n2(MorphismPot *pot, Morphism *morphism)
-{
-   RootNodes *nodes;
-   for(nodes = getRootNodeList(a_edge_host); nodes != NULL; nodes = nodes->next)
-   {
-      Node *host_node = getNode(a_edge_host, nodes->index);
-      if(host_node == NULL) continue;
-      if(host_node->matched) continue;
-      if(host_node->label.mark != 4) continue;
-      if(host_node->indegree < 0 || host_node->outdegree < 0 ||
-         ((host_node->outdegree + host_node->indegree - 0 - 0 - 0) < 0)) continue;
-
-      HostLabel label = host_node->label;
-      bool match = false;
-      /* Label Matching */
-      int new_assignments = 0;
-      do
-      {
-         /* The rule list does not contain a list variable, so there is no
-          * match if the host list has a different length. */
-         if(label.length != 1) break;
-         HostListItem *item = label.list->first;
-         /* Matching rule atom 1. */
-         if(item->atom.type != 's') break;
-         else if(strcmp(item->atom.str, "Active") != 0) break;
-         match = true;
-      } while(false);
-
-      if(match)
-      {
-         addNodeMap(morphism, 2, host_node->index, new_assignments);
-         host_node->matched = true;
-         /* Update global booleans representing the node's predicates. */
-         evaluatePredicatea_edge_2(morphism);
-         bool next_match_result = false;
-         if(evaluateCondition()) next_match_result = fillpot_n0(pot, morphism);
-         if(next_match_result) return true;
-         else
-         {
-            /* Reset the boolean variables in the predicates of this node. */
-            a_edge_b2 = true;
-            removeNodeMap(morphism, 2);
-            host_node->matched = false;
-         }
-      }
-      else removeAssignments(morphism, new_assignments);
-   }
-   return false;
 }
 
 static bool fillpot_n0(MorphismPot *pot, Morphism *morphism)
@@ -383,17 +242,11 @@ static bool fillpot_n0(MorphismPot *pot, Morphism *morphism)
       {
          addNodeMap(morphism, 0, host_node->index, new_assignments);
          host_node->matched = true;
-         /* Update global booleans representing the node's predicates. */
-         evaluatePredicatea_edge_2(morphism);
-         bool next_match_result = false;
-         if(evaluateCondition()) next_match_result = fillpot_e0(pot, morphism);
-         if(next_match_result) return true;
+         if(fillpot_e0(pot, morphism)) return true;
          else
          {
-            /* Reset the boolean variables in the predicates of this node. */
-            a_edge_b2 = true;
-            removeNodeMap(morphism, 0);
-            host_node->matched = false;
+         removeNodeMap(morphism, 0);
+         host_node->matched = false;
          }
       }
       else removeAssignments(morphism, new_assignments);

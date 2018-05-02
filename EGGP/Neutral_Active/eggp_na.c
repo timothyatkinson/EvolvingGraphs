@@ -84,8 +84,10 @@ Graph* eggp_mutate_a(Graph* host, Function_Set* fset, double a_mutation_rate){
 
   //Prepare the graph by loading in function set
   prepare_graph_mutate(new_graph, fset);
-  int nodes = count_active_nodes(host, 0, 0);
-  int edges = count_active_edges(host);
+  //int nodes = count_active_nodes(host, 0, 0);
+  //int edges = count_active_edges(host);
+  int nodes = new_graph->nodes.size;
+  int edges = new_graph->edges.size;
   int mutations = 0;
   int num = nodes + edges;
   for(int i = 0; i < num; i++){
