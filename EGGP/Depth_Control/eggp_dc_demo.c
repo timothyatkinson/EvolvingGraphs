@@ -9,10 +9,10 @@ int main(void){
   printf("X3+X2+X\n");
   GP_Dataset* dataset = load_data_set("../../Datasets/SymbolicRegression/x3+x2+x1.csv", 1, 1, 1, 1, 1, 25);
   EAArgs** args = malloc(100 * sizeof(EAArgs*));
-  // for(int i = 0; i < 100; i++){
-  //   args[i] = eggp_dc_EAArgs(dataset, fset, 6);
-  // }
-  // run_multi(args, 100);
+   for(int i = 0; i < 100; i++){
+     args[i] = eggp_dc_EAArgs(dataset, fset, 6);
+   }
+   run_multi(args, 100);
   // printf("X4+X3+X2+X\n");
   // dataset = load_data_set("../../Datasets/SymbolicRegression/x4+x3+x2+x1.csv", 1, 1, 1, 1, 1, 25);
   // args = malloc(100 * sizeof(EAArgs*));

@@ -193,6 +193,297 @@ double gp_evaluate(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
 }
 
 //Evaluates a Genetic Programming individual. Used in CGP, EGGP, PDGP and TinyGP implementations
+double gp_evaluate_square(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
+	mark_active_blue(host_graph);
+
+  int rows = dataset->rows;
+  int inputs = dataset->inputs;
+  int outputs = dataset->outputs;
+  int width = host_graph->nodes.size;
+  double values[rows][width];
+  int ready[width];
+  double totalError = 0.0;
+  //Find inputs and outputs
+  int inputIndex[inputs];
+  for(int i = 0; i<inputs; i++){
+    inputIndex[i] = -1;
+  }
+  int outputIndex[outputs];
+  for(int j = 0; j<outputs; j++){
+    outputIndex[j] = -1;
+  }
+
+  for(int host_index = 0; host_index < host_graph->nodes.size; host_index++)
+  {
+     Node *host_node = getNode(host_graph, host_index);
+     if(host_node == NULL || host_node->index == -1) continue;
+
+     HostLabel label = host_node->label;
+
+     HostListItem *item = label.list->first;
+     HostListItem *item2 = label.list->last;
+     if(item->atom.type != 'i') break;
+     if(item2->atom.type != 's') break;
+     if(strcmp(item2->atom.str, "IN") == 0){
+       inputIndex[item->atom.num] = host_index;
+     }
+     if(strcmp(item2->atom.str, "OUT") == 0){
+       outputIndex[item->atom.num] = host_index;
+     }
+  }
+
+  int queue[host_graph->nodes.size];
+  int head = 0;
+  int tail = 0;
+
+	for(int x = 0; x < width; x++){
+      ready[x] = 0;
+	}
+  for(int r = 0; r < rows; r++){
+    for(int x = 0; x < width; x++){
+      values[r][x] = -1.0;
+    }
+	}
+  for(int q = 0; q < width; q++){
+    queue[q] = 0;
+  }
+
+  //Load inputs
+  for(int i = 0; i < inputs; i++){
+		for(int r = 0; r < rows; r++){
+    	values[r][inputIndex[i]] = (dataset->data)[r][i];
+		}
+    ready[inputIndex[i]] = 1;
+    Node *host_node = getNode(host_graph, inputIndex[i]);
+    int counter;
+    for(counter = 0; counter < host_node->in_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthInEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int source = host_edge->source;
+      ready[source]++;
+			Node* source_node = getNode(host_graph, source);
+			if(source_node->label.mark == 0) continue;
+       if(ready[source] >= source_node->outdegree){
+        queue[tail] = source;
+        tail++;
+      }
+    }
+  }
+
+
+
+  while(head < tail){
+    int node_index = queue[head];
+    head++;
+    Node *host_node = getNode(host_graph, node_index);
+
+    HostLabel label = host_node->label;
+    HostListItem *item = label.list->last;
+    char* function = item->atom.str;
+
+    double in_values[rows][host_node->outdegree];
+    int counter;
+    for(counter = 0; counter < host_node->out_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthOutEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int target = host_edge->target;
+
+			HostLabel label = host_edge->label;
+			int vIndex = label.list->first->atom.num;
+			for(int r = 0; r < rows; r++){
+      	in_values[r][vIndex] = values[r][target];
+			}
+    }
+
+    if(strcmp(function, "OUT") == 0){
+	 	   //printf("OUT function\n");
+  		 for(int r = 0; r < rows; r++){
+          values[r][node_index] = in_values[r][0];
+		// 		//printf("%d: %lf\n", node_index, values[r][node_index]);
+	 	   }
+     }
+     else{
+       Function* f = get_function(fset, function);
+  		 for(int r = 0; r < rows; r++){
+         values[r][node_index] = f->func(in_values[r]);
+       }
+     }
+
+    for(counter = 0; counter < host_node->in_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthInEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int source = host_edge->source;
+      ready[source]++;
+			Node* source_node = getNode(host_graph, source);
+			if(source_node->label.mark == 0) continue;
+      if(ready[source] >= source_node->outdegree){
+        queue[tail] = source;
+        tail++;
+      }
+    }
+  }
+
+  for(int o = 0; o < outputs; o++){
+		for(int r = 0; r < rows; r++){
+			//printf("Expected %lf got %lf diff %lf\n", data[r][inputs + o], values[r][outputIndex[o]], fabs(values[r][outputIndex[o]] - data[r][inputs + o]));
+    	totalError = totalError + pow(fabs(values[r][outputIndex[o]] - dataset->data[r][inputs + o]), 2);
+		}
+  }
+	unmark_graph(host_graph);
+  return totalError;
+}
+
+//Evaluates a Genetic Programming individual. Used in CGP, EGGP, PDGP and TinyGP implementations
+double gp_evaluate_worst(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
+	mark_active_blue(host_graph);
+  double worst = 0.0;
+  int rows = dataset->rows;
+  int inputs = dataset->inputs;
+  int outputs = dataset->outputs;
+  int width = host_graph->nodes.size;
+  double values[rows][width];
+  int ready[width];
+  //Find inputs and outputs
+  int inputIndex[inputs];
+  for(int i = 0; i<inputs; i++){
+    inputIndex[i] = -1;
+  }
+  int outputIndex[outputs];
+  for(int j = 0; j<outputs; j++){
+    outputIndex[j] = -1;
+  }
+
+  for(int host_index = 0; host_index < host_graph->nodes.size; host_index++)
+  {
+     Node *host_node = getNode(host_graph, host_index);
+     if(host_node == NULL || host_node->index == -1) continue;
+
+     HostLabel label = host_node->label;
+
+     HostListItem *item = label.list->first;
+     HostListItem *item2 = label.list->last;
+     if(item->atom.type != 'i') break;
+     if(item2->atom.type != 's') break;
+     if(strcmp(item2->atom.str, "IN") == 0){
+       inputIndex[item->atom.num] = host_index;
+     }
+     if(strcmp(item2->atom.str, "OUT") == 0){
+       outputIndex[item->atom.num] = host_index;
+     }
+  }
+
+  int queue[host_graph->nodes.size];
+  int head = 0;
+  int tail = 0;
+
+	for(int x = 0; x < width; x++){
+      ready[x] = 0;
+	}
+  for(int r = 0; r < rows; r++){
+    for(int x = 0; x < width; x++){
+      values[r][x] = -1.0;
+    }
+	}
+  for(int q = 0; q < width; q++){
+    queue[q] = 0;
+  }
+
+  //Load inputs
+  for(int i = 0; i < inputs; i++){
+		for(int r = 0; r < rows; r++){
+    	values[r][inputIndex[i]] = (dataset->data)[r][i];
+		}
+    ready[inputIndex[i]] = 1;
+    Node *host_node = getNode(host_graph, inputIndex[i]);
+    int counter;
+    for(counter = 0; counter < host_node->in_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthInEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int source = host_edge->source;
+      ready[source]++;
+			Node* source_node = getNode(host_graph, source);
+			if(source_node->label.mark == 0) continue;
+       if(ready[source] >= source_node->outdegree){
+        queue[tail] = source;
+        tail++;
+      }
+    }
+  }
+
+
+
+  while(head < tail){
+    int node_index = queue[head];
+    head++;
+    Node *host_node = getNode(host_graph, node_index);
+
+    HostLabel label = host_node->label;
+    HostListItem *item = label.list->last;
+    char* function = item->atom.str;
+
+    double in_values[rows][host_node->outdegree];
+    int counter;
+    for(counter = 0; counter < host_node->out_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthOutEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int target = host_edge->target;
+
+			HostLabel label = host_edge->label;
+			int vIndex = label.list->first->atom.num;
+			for(int r = 0; r < rows; r++){
+      	in_values[r][vIndex] = values[r][target];
+			}
+    }
+
+    if(strcmp(function, "OUT") == 0){
+	 	   //printf("OUT function\n");
+  		 for(int r = 0; r < rows; r++){
+          values[r][node_index] = in_values[r][0];
+		// 		//printf("%d: %lf\n", node_index, values[r][node_index]);
+	 	   }
+     }
+     else{
+       Function* f = get_function(fset, function);
+  		 for(int r = 0; r < rows; r++){
+         values[r][node_index] = f->func(in_values[r]);
+       }
+     }
+
+    for(counter = 0; counter < host_node->in_edges.size + 2; counter++)
+    {
+      Edge *host_edge = getNthInEdge(host_graph, host_node, counter);
+      if(host_edge == NULL) continue;
+      int source = host_edge->source;
+      ready[source]++;
+			Node* source_node = getNode(host_graph, source);
+			if(source_node->label.mark == 0) continue;
+      if(ready[source] >= source_node->outdegree){
+        queue[tail] = source;
+        tail++;
+      }
+    }
+  }
+
+  for(int o = 0; o < outputs; o++){
+		for(int r = 0; r < rows; r++){
+			//printf("Expected %lf got %lf diff %lf\n", data[r][inputs + o], values[r][outputIndex[o]], fabs(values[r][outputIndex[o]] - data[r][inputs + o]));
+    	double error = fabs(values[r][outputIndex[o]] - dataset->data[r][inputs + o]);
+      if(error > worst){
+        worst = error;
+      }
+		}
+  }
+	unmark_graph(host_graph);
+  return worst;
+}
+
+
+//Evaluates a Genetic Programming individual. Used in CGP, EGGP, PDGP and TinyGP implementations
 double gp_print_evaluate(Graph* host_graph, GP_Dataset* dataset, Function_Set* fset){
 	mark_active_blue(host_graph);
 
@@ -473,6 +764,18 @@ double* gp_evaluate_population(Graph** population, uintptr_t GP_eval_env_pointer
   return scores;
 }
 
+double* gp_evaluate_square_population(Graph** population, uintptr_t GP_eval_square_env_pointer){
+  GP_eval_square_env* eval_env = (GP_eval_square_env*)GP_eval_square_env_pointer;
+  GP_Dataset* dataset = eval_env->dataset;
+  Function_Set* fset = eval_env->fset;
+  int pop_size = eval_env->pop_size;
+  double* scores = malloc(pop_size * sizeof(double));
+  for(int i = 0; i < pop_size; i++){
+    scores[i] = gp_evaluate_square(population[i], dataset, fset);
+  }
+  return scores;
+}
+
 bool target_0(Graph** population, double* scores, uintptr_t target_0_env_pointer){
   Target_0_env* target_env = (Target_0_env*)target_0_env_pointer;
   int pop_size = target_env->pop_size;
@@ -490,6 +793,21 @@ bool target_x(Graph** population, double* scores, uintptr_t target_x_env_pointer
   double x = target_env->x;
   for(int i = 0; i < pop_size; i++){
     if(scores[i] <= x){
+      return true;
+    }
+  }
+  return false;
+}
+
+bool target_worst_x(Graph** population, double* scores, uintptr_t target_worst_x_env_pointer){
+  Target_worst_x_env* target_env = (Target_worst_x_env*)target_worst_x_env_pointer;
+  int pop_size = target_env->pop_size;
+  Function_Set* fset = target_env->fset;
+  GP_Dataset* dataset = target_env->dataset;
+  double x = target_env->x;
+  for(int i = 0; i < pop_size; i++){
+    double worst_score = target_env->get_worst_score(population[i], dataset, fset);
+    if(worst_score <= x){
       return true;
     }
   }

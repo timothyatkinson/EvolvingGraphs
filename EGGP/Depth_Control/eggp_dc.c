@@ -139,10 +139,13 @@ GP_eval_env* eggp_dc_eval_env(GP_Dataset* dataset, Function_Set* fset){
 }
 
 
-Target_x_env* eggp_dc_termination_env(){
-  Target_x_env* env = malloc(sizeof(Target_x_env));
+Target_worst_x_env* eggp_dc_termination_env(GP_Dataset* dataset, Function_Set* fset){
+  Target_worst_x_env* env = malloc(sizeof(Target_worst_x_env));
   env->pop_size = 5;
   env->x = 0.01;
+  env->dataset = dataset;
+  env->fset = fset;
+  env->get_worst_score = gp_evaluate_worst;
   return env;
 }
 
@@ -156,7 +159,7 @@ EAArgs* eggp_dc_EAArgs(GP_Dataset* dataset, Function_Set* fset, int depth){
   uintptr_t init_pointer = (uintptr_t)eggp_dc_init_env(dataset, fset, depth);
   uintptr_t select_pointer = (uintptr_t)eggp_dc_select_env(fset, depth);
   uintptr_t eval_pointer = (uintptr_t)eggp_dc_eval_env(dataset, fset);
-  uintptr_t term_pointer = (uintptr_t)eggp_dc_termination_env();
+  uintptr_t term_pointer = (uintptr_t)eggp_dc_termination_env(dataset, fset);
   uintptr_t pop_pointer = (uintptr_t)eggp_dc_pop_size_env();
   EAArgs* args = malloc(sizeof(EAArgs));
   args->initialisation = eggp_init_dc;
@@ -165,7 +168,7 @@ EAArgs* eggp_dc_EAArgs(GP_Dataset* dataset, Function_Set* fset, int depth){
   args->evaluation_env_pointer = eval_pointer;
   args->select_repopulate = GP_1_plus_lambda_dc;
   args->select_repopulate_env_pointer = select_pointer;
-  args->termination = target_x;
+  args->termination = target_worst_x;
   args->termination_env_pointer = term_pointer;
   args->pop_size = fixed_pop_size;
   args->pop_size_env_pointer = pop_pointer;
