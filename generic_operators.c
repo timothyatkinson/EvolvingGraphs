@@ -38,13 +38,6 @@ GP_Dataset* load_data_set(char* file, int inputs, int rand_inputs, double rand_m
       }
     }
   }
-	printf("Rows: %d\n", rows);
-  for(int i = 0; i < rows; i++){
-    for(int j = 0; j < inputs + rand_inputs +  outputs; j++){
-      printf("%lf, ", dataset->data[i][j]);
-    }
-    printf("\n");
-  }
   return dataset;
 }
 

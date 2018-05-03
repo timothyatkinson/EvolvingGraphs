@@ -9,8 +9,8 @@ CFLAGS = -I$(INCDIR) -L $(LIBDIR) -O2 -lgp2 -lm -g
 default:	$(OBJECTS)
 		rm -f -r pgp2;	mkdir pgp2;
 		$(foreach var,$(GP2_OBJECTS),mkdir pgp2/$(var);	echo '$(var).gp2 compile'; ../../PGP2/bin/gp2 -l ../PGP2 -m $(var) -o pgp2/$(var) $(var).gp2; )
-		$(CC) $(OBJECTS) $(foreach var,$(GP2_OBJECTS), pgp2/$(var)/*.c) $(CFLAGS) -o eggp_neutral_active4
+		$(CC) $(OBJECTS) $(foreach var,$(GP2_OBJECTS), pgp2/$(var)/*.c) $(CFLAGS) -o eggp_na_1
 
 clean:
-		rm eggp_neutral_active3
+		rm eggp_na_5
 		$(foreach var,$(GP2_OBJECTS),-rm -r $(var))

@@ -67,7 +67,7 @@ GP_1_plus_lambda_na_env* eggp_na_select_env(Function_Set* fset){
   env->mutate_n = eggp_mutate_n;
   env->pop_size = 5;
   env->a_mutation_rate = 0.01;
-  env->n_mutation_rate = 0.05;
+  env->n_mutation_rate = 0.01;
   env->winner_index = -1;
   env->winner_score = 99999999.9;
   env->fset = fset;
