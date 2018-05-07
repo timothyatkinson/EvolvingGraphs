@@ -26,5 +26,6 @@ Fixed_pop_env* default_eggp_pop_size_env();
 
 Graph** eggp_init(uintptr_t env_pointer);
 Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate);
+Graph* eggp_mutate_nosf(Graph* host, Function_Set* fset, double mutation_rate);
 
 #endif

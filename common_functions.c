@@ -79,6 +79,9 @@ Function_Set* get_common_fset(string fsetV){
         else if(strcmp(name, "not") == 0){
           add_function(fset, "NOT", 1, common_not);
         }
+        else if(strcmp(name, "not2") == 0){
+          add_function(fset, "NOT", 2, common_not);
+        }
         else if(strcmp(name, "id") == 0){
           add_function(fset, "ID", 1, common_id);
         }

@@ -139,6 +139,49 @@ Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
         mutations++;
       }
       else{
+        eggp_mutate_node_shuffle_execute(new_graph);
+        mutations++;
+      }
+    }
+  }
+
+  if(mutations == 0){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= ((double)edges / (double)(num))){
+      eggp_mutate_edge_execute(new_graph);
+    }
+    else{
+      eggp_mutate_node_shuffle_execute(new_graph);
+    }
+  }
+
+  //Clean graph (removing meta data from prepare_graph_mutate)
+  clean_graph_mutate(new_graph);
+
+  return new_graph;
+}
+
+//Mutates a EGGP individual (copies the individual, rather than overwriting).
+Graph* eggp_mutate_nosf(Graph* host, Function_Set* fset, double mutation_rate){
+  //Copy the individual to mutate
+  Graph* new_graph = duplicate_graph(host);
+
+  //Prepare the graph by loading in function set
+  prepare_graph_mutate(new_graph, fset);
+  int nodes = new_graph->nodes.size;
+  int edges = new_graph->edges.size;
+  int mutations = 0;
+  int num = new_graph->nodes.size + new_graph->edges.size;
+
+  for(int i = 0; i < num; i++){
+    double r = ((double)rand() / (double)RAND_MAX);
+    if(r <= mutation_rate){
+      double r2 = ((double)rand() / (double)RAND_MAX);
+      if(r2 <= ((double)edges / (double)(num))){
+        eggp_mutate_edge_execute(new_graph);
+        mutations++;
+      }
+      else{
         eggp_mutate_node_execute(new_graph);
         mutations++;
       }
@@ -160,7 +203,6 @@ Graph* eggp_mutate(Graph* host, Function_Set* fset, double mutation_rate){
 
   return new_graph;
 }
-
 //Util function for preparing a graph for generating a EGGP individual
 static void prepare_graph_init(Graph* host, Function_Set* fset, int inputs, int outputs, int nodes){
   /* Initialise host graph */
